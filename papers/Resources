@@ -1,0 +1,24 @@
+
+Implementation of "Generative Adversarial Networks to recover features in astrophysical images of galaxies beyond the deconvolution limit" in python:
+https://github.com/SpaceML/GalaxyGAN_python
+
+How to Train a GAN?
+https://github.com/soumith/ganhacks
+
+NIPS Conference explaining GANs:
+https://channel9.msdn.com/Events/Neural-Information-Processing-Systems-Conference/Neural-Information-Processing-Systems-Conference-NIPS-2016/Generative-Adversarial-Networks
+
+Implementation of C-RNN-GAN:
+https://github.com/olofmogren/c-rnn-gan
+
+GAN: A Beginner’s Guide to Generative Adversarial Networks:
+https://deeplearning4j.org/generative-adversarial-network
+
+Generate cat images with neural networks:
+https://github.com/aleju/cat-generator
+
+Generative Adversarial Networks:
+https://medium.com/@ekss1121/generative-adversarial-networks-b9f80e6d7679
+
+Generative Models:
+https://blog.openai.com/generative-models/#contributions
