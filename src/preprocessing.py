@@ -3,14 +3,16 @@ import os
 import pandas as pd
 from skimage import io
 
-global cwd
-cwd = os.getcwd()
+from config import *
 
-data_label_path = cwd + "/data/labeled.csv"
-data_score_path = cwd + "/data/scored.csv"
-label_img_folder = cwd + "/data/labeled/"
-score_img_folder = cwd + "/data/scored/"
-query_img_folder = cwd + "/data/query/"
+# global cwd
+# cwd = os.getcwd()
+#
+# data_label_path = cwd + "/data/labeled.csv"
+# data_score_path = cwd + "/data/scored.csv"
+# label_img_folder = cwd + "/data/labeled/"
+# score_img_folder = cwd + "/data/scored/"
+# query_img_folder = cwd + "/data/query/"
 
 
 def load_data(type, path=None, csv_file = None):  # type=labeled or scored (query special case without csv later)
@@ -36,21 +38,27 @@ def load_data(type, path=None, csv_file = None):  # type=labeled or scored (quer
 		img    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 		Name: 1000956, dtype: object
 	"""
+	print("Starting the preprocessing...")
 	result = pd.DataFrame()
 	images_array=[]
 	ids = []  # name of the images to retrieve in csv file
 	if path == None:
-		path = cwd + "/data/{}/".format(type)
+		path = data_folder + "/{}/".format(type)
 	for image in os.listdir(path):
 		images_array.append(io.imread(os.path.join(path, image)))
 		ids.append(int(image.replace(".png","")))
 	result['img'] = pd.Series(images_array, index=ids)
 	if type != 'query':
 		if csv_file == None:
-			csv_file = cwd + "/data/{}.csv".format(type)
+			csv_file = data_folder + "/{}.csv".format(type)
 		# loading the score or the label
 		df = pd.read_csv(csv_file)
 		result[type]= pd.Series(df['Actual'].values, index=df['Id'].values)
+
+	print("Saving preprocessed data..")
+	path = data_folder + "/preprocessed_" + str(type) + ".csv"
+	result.to_csv(path, sep=',')
+	print("Saved the preprocessed data successfully as {}".format(path))
 	return result
 
 
@@ -73,3 +81,9 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 			start_index = batch_num * batch_size
 			end_index = min((batch_num + 1) * batch_size, data_size)
 			yield shuffled_data[start_index:end_index]
+
+
+# For testing
+if __name__ == "__main__":
+	data = load_data(type='scored', path=None, csv_file=None)
+	print(data)
