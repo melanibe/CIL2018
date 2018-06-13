@@ -1,5 +1,6 @@
-import preprocessing
-from model_skeleton import discriminator
+from src import preprocessing
+from src.model.model_skeleton import Discriminator
+from config import *
 
 
 import tensorflow as tf
@@ -39,9 +40,9 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 
 # for running on EULER
 tf.flags.DEFINE_integer("inter_op_parallelism_threads", 16,
- 	"TF nodes that perform blocking operations are enqueued on a pool of inter_op_parallelism_threads available in each process (default 0).")
+	"TF nodes that perform blocking operations are enqueued on a pool of inter_op_parallelism_threads available in each process (default 0).")
 tf.flags.DEFINE_integer("intra_op_parallelism_threads", 16,
- 	"The execution of an individual op (for some op types) can be parallelized on a pool of intra_op_parallelism_threads (default: 0).")
+	"The execution of an individual op (for some op types) can be parallelized on a pool of intra_op_parallelism_threads (default: 0).")
 
 FLAGS = tf.flags.FLAGS
 
@@ -50,16 +51,12 @@ for attr, value in sorted(FLAGS.__flags.items()):
 	print("{}={}".format(attr.upper(), value.value))
 print("")
 
+
 ## DATA PREPARATION ##
 
 # Load data
-print("Loading and preprocessing training \n")
+print("Loading and preprocessing training... \n")
 
-global cwd
-cwd = os.getcwd()
-
-label_img_folder = cwd + "/data/labeled/"
-score_img_folder = cwd + "/data/scored/"
 
 # Saving the objects:
 if os.path.isfile("var.pickle"):
@@ -88,10 +85,10 @@ else:
 			f_out.write(bytes_out[idx:idx+max_bytes])
 
 
-#data_scored = preprocessing.load_data("scored", score_img_folder)
-#imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
-#scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
-#x = np.concatenate((imgs,scores), axis = 1)
+# data_scored = preprocessing.load_data("scored", score_img_folder)
+# imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
+# scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
+# x = np.concatenate((imgs,scores), axis = 1)
 
 print("Data loaded")
 
@@ -122,8 +119,7 @@ with graph.as_default():
 	with sess.as_default():
 
 		# Initialize model
-		discr = discriminator(
-			)
+		discr = Discriminator()
 
 		# Define an optimizer with clipping the gradients
 		global_step = tf.Variable(0, name="global_step", trainable= False)
@@ -171,7 +167,7 @@ with graph.as_default():
 			feed_dict = {
 				discr.input_img: batch[:, 0],
 				discr.scores: batch[:, 1]
-            	}
+			}
 			_, step, summaries, loss = sess.run(
 				[train_op, global_step, train_summary_op, discr.loss],
 				feed_dict)

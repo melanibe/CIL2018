@@ -1,11 +1,8 @@
-import preprocessing
-from model_skeleton import ####
+from src import preprocessing
+from src.model.model_skeleton import ####
 
 import tensorflow as tf
-import numpy as np
 import os
-import time
-import datetime
 
 """
 To predict
