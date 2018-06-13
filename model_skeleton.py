@@ -16,24 +16,23 @@ class discriminator(object):
 	def avg_pool_2x2(x):
 		return tf.nn.avg_pool(x, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
 
-	def __init__(self, im_dtype, reuse= False, discr_type= "regressor"):
+	def __init__(self, reuse=False, discr_type="regressor"):
 		"""Model initializer regressor discriminator.
 		parameters:
 		reuse: True if we want to use Model2, False to use Model1
 		discr_type: regressor / discriminator (in order to use model2)
         """
-
         
-		self.input_img = tf.placeholder(im_dtype, [None,None,None], name='input_img') #dim batch * shape
+		self.input_img = tf.placeholder(tf.uint8, [None,None,None], name='input_img') #dim batch * shape
 		#reshape in [batch, height, width, channels] where channels= 1 for tf.nn.conv2d
-		self.input_img = tf.reshape(self.input_img, [tf.shape(self.input)[0], tf.shape(self.input)[1], tf.shape(self.input)[2], 1])
+		self.input_img = tf.reshape(self.input_img, [tf.shape(self.input_img)[0], tf.shape(self.input_img)[1], tf.shape(self.input_img)[2], 1])
 
 		if discr_type == "regressor":
-			self.scores = tf.placeholder(dtype, shape, name='scores')
+			self.scores = tf.placeholder(tf.float32, [None], name='scores')
 		else:
-			self.labels = tf.placeholder(dtype, shape, name='labels')
+			self.labels = tf.placeholder(tf.int8, [None], name='labels')
 
-		batch_size = tf.shape(self.input)[0]
+		batch_size = tf.shape(self.input_img)[0]
 
 		with tf.device('/gpu:0'):
 			# layer 1
@@ -87,9 +86,11 @@ class discriminator(object):
 					loss_label = tf.softmax_cross_entropy_with_logits(logits=self.logits, labels=self.labels, name='loss_label')
 
 
+
+
 class discriminator_label(object):
 
-	def __init__(self, n_hidden, ...):
+	def __init__(self, n_hidden):
 		"""Model initializer label discriminator.
         """
 		self.input_img = tf.placeholder(dtype, shape, name='input img') #dim batch * shape
@@ -99,9 +100,10 @@ class discriminator_label(object):
 			# layer 1
 			with tf.name_scope("CNN"):
 					#TO COMPLETE maybe write a separate function that construct the CNN (see random notes)
+					a = 0
 			# fully connected
 			with tf.name_scope("fully connected"):
-				logits = tf.dense ...
+				logits = tf.dense
 			# final output
 			with tf.name_scope("output"):					
 				predictions_labels = tf.argmax(logits)

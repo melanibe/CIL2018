@@ -1,5 +1,5 @@
 import preprocessing
-from model_skeleton import ####
+from model_skeleton import discriminator
 
 
 import tensorflow as tf
@@ -8,18 +8,22 @@ import os
 import time
 import datetime
 
+import sys
+
+import pickle
+
 """Launch file for training tasks
 
 """
+
 ## PARAMETERS ##
 
 # Data loading parameters
 tf.flags.DEFINE_float("dev_sample_percentage", .0001, "Percentage of the training data used for validation")
 tf.flags.DEFINE_string("data_file_path", "/data/sentences.train", "Path to the training data")
-tf.flags.DEFINE_string("experiment", exp, "experiment type")
 
 # Model parameters
-tf.flags.DEFINE_integer("n_hidden", n_hidden, "Size of hidden state")
+#tf.flags.DEFINE_integer("n_hidden", n_hidden, "Size of hidden state")
 
 
 # Training parameters
@@ -49,7 +53,45 @@ print("")
 ## DATA PREPARATION ##
 
 # Load data
-print("Loading and preprocessing training and dev datasets \n")
+print("Loading and preprocessing training \n")
+
+global cwd
+cwd = os.getcwd()
+
+label_img_folder = cwd + "/data/labeled/"
+score_img_folder = cwd + "/data/scored/"
+
+# Saving the objects:
+if os.path.isfile("var.pickle"):
+	max_bytes = 2**31 - 1
+	input_size = os.path.getsize("var.pickle")
+	bytes_in = bytearray(0)
+	with open("var.pickle", 'rb') as f_in:
+		for _ in range(0, input_size, max_bytes):
+			bytes_in += f_in.read(max_bytes)
+	x = pickle.loads(bytes_in)
+
+else:
+	data_scored = preprocessing.load_data("scored", score_img_folder)
+	imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
+	scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
+	x = np.concatenate((imgs,scores), axis = 1)
+
+
+	max_bytes = 2**31 - 1
+	bytes_out = pickle.dumps(x)
+	n_bytes = sys.getsizeof(bytes_out)
+
+	with open("var.pickle", 'wb') as f_out:
+		for idx in range(0, n_bytes, max_bytes):
+
+			f_out.write(bytes_out[idx:idx+max_bytes])
+
+
+#data_scored = preprocessing.load_data("scored", score_img_folder)
+#imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
+#scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
+#x = np.concatenate((imgs,scores), axis = 1)
 
 print("Data loaded")
 
@@ -80,18 +122,13 @@ with graph.as_default():
 	with sess.as_default():
 
 		# Initialize model
-		"""to change
-		lstm = LSTM(
-			vocab_size=FLAGS.vocab_size, 
-			embedding_size=FLAGS.embedding_dim, 
-			n_hidden = FLAGS.n_hidden,
-			extra_layer = FLAGS.extra_layer
-			)"""
+		discr = discriminator(
+			)
 
 		# Define an optimizer with clipping the gradients
 		global_step = tf.Variable(0, name="global_step", trainable= False)
 		optimizer = tf.train.AdamOptimizer()
-		gradient_var_pairs = optimizer.compute_gradients(lstm.loss)
+		gradient_var_pairs = optimizer.compute_gradients(discr.loss)
 		vars = [x[1] for x in gradient_var_pairs]
 		gradients = [x[0] for x in gradient_var_pairs]
 		clipped, _ = tf.clip_by_global_norm(gradients, 5)
@@ -103,7 +140,7 @@ with graph.as_default():
 		print("Writing to {}\n".format(out_dir))
 
 		# Loss summaries
-		loss_summary = #tf.summary.scalar("loss", lstm.loss)
+		loss_summary = tf.summary.scalar("loss", discr.loss)
 
 		# Train summaries
 		train_summary_op = tf.summary.merge([loss_summary])
@@ -127,29 +164,31 @@ with graph.as_default():
 		sess.graph.finalize()
 
 		# Define training and dev steps (batch)
-		def train_step(x_batch):
+		def train_step(x_batch, s_batch):
 			"""
 			A single training step
 			"""
 			feed_dict = {
-				#lstm.input: x_batch
+				discr.input_img: batch[:, 0],
+				discr.scores: batch[:, 1]
             	}
 			_, step, summaries, loss = sess.run(
-				[train_op, global_step, train_summary_op, lstm.loss],
+				[train_op, global_step, train_summary_op, discr.loss],
 				feed_dict)
 			time_str = datetime.datetime.now().isoformat()
 			print("{}: step {}, loss {:g}".format(time_str, step, loss))
 			train_summary_writer.add_summary(summaries, step)
 
-		def dev_step(x_batch, writer=None):
+		def dev_step(x_batch, s_batch, writer=None):
 			"""
 			Evaluates model on a dev set
 			"""
 			feed_dict = {
-				#lstm.input: x_batch
+				discr.input_img: batch[:, 0],
+				discr.scores: batch[:, 1]
 				}
 			step, summaries, loss = sess.run(
-				[global_step, dev_summary_op, lstm.loss],
+				[global_step, dev_summary_op, discr.loss],
 				feed_dict)
 			time_str = datetime.datetime.now().isoformat()
 			print("{}: step {}, loss {:g}".format(time_str, step, loss))
@@ -158,11 +197,11 @@ with graph.as_default():
 
 		## TRAINING LOOP ##
 		for batch in batches:
-			train_step(batch)
+			train_step(batch, s_train)
 			current_step = tf.train.global_step(sess, global_step)
 			if current_step % FLAGS.evaluate_every == 0:
 				print("\nEvaluation:")
-				dev_step(x_dev, writer=dev_summary_writer)
+				dev_step(x_dev, s_dev, writer=dev_summary_writer)
 				print("")
 			if current_step % FLAGS.checkpoint_every == 0:
 				path = saver.save(sess, checkpoint_prefix, global_step=current_step)
