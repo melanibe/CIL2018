@@ -12,12 +12,13 @@ label_img_folder = cwd + "/data/labeled/"
 score_img_folder = cwd + "/data/scored/"
 query_img_folder = cwd + "/data/query/"
 
-def load_data(type, path=None, csv_file = None): #type=labeled or scored (query special case without csv later)
+
+def load_data(type, path=None, csv_file = None):  # type=labeled or scored (query special case without csv later)
 	"""This function creates a dataframe with:
 			- a column containg the image (array)
 			- a column 'labeled' with the label if type = labeled
-			 OR a column 'scored' with the score if type = score
-			 OR no other column if type = query
+			OR a column 'scored' with the score if type = score
+			OR no other column if type = query
 			- the row index of the dataframe is the name of the image
 	Examples:
 	>>> df_label = load_data('labeled')
@@ -34,26 +35,26 @@ def load_data(type, path=None, csv_file = None): #type=labeled or scored (query 
 	>>> df_query.loc[1000956]
 		img    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 		Name: 1000956, dtype: object
-	"""											
+	"""
 	result = pd.DataFrame()
 	images_array=[]
-	ids = [] #name of the images to retrieve in csv file
+	ids = []  # name of the images to retrieve in csv file
 	if path == None:
 		path = cwd + "/data/{}/".format(type)
 	for image in os.listdir(path):
 		images_array.append(io.imread(os.path.join(path, image)))
 		ids.append(int(image.replace(".png","")))
-	result['img'] = pd.Series(images_array, index=ids)	
+	result['img'] = pd.Series(images_array, index=ids)
 	if type != 'query':
 		if csv_file == None:
 			csv_file = cwd + "/data/{}.csv".format(type)
-		#loading the score or the label
+		# loading the score or the label
 		df = pd.read_csv(csv_file)
 		result[type]= pd.Series(df['Actual'].values, index=df['Id'].values)
 	return result
 
 
-#FUNCTION DEFINED IN SERIES 5 SOLUTION
+# FUNCTION DEFINED IN SERIES 5 SOLUTION
 def batch_iter(data, batch_size, num_epochs, shuffle=True):
 	"""
 	Generates a batch iterator for a dataset.
