@@ -106,8 +106,8 @@ venv.bak/
 .idea/
 
 # data
-data/**
+**/data
 
 # Papers
-papers/**
+**/papers
 
