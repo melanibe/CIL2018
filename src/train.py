@@ -19,7 +19,7 @@ import pickle
 ## PARAMETERS ##
 
 # Data loading parameters
-tf.flags.DEFINE_float("dev_sample_percentage", .1, "Percentage of the training data used for validation")
+tf.flags.DEFINE_float("dev_sample_percentage", .01, "Percentage of the training data used for validation")
 
 # Model parameters
 tf.flags.DEFINE_boolean("reuse", False, "reuse")
@@ -59,6 +59,7 @@ print("")
 print("Loading and preprocessing training... \n")
 
 # Saving or loading the objects:
+""" too big for cluster
 if os.path.isfile("score.pickle"):
 	max_bytes = 2**31 - 1
 	input_size = os.path.getsize("score.pickle")
@@ -107,7 +108,16 @@ else:
 				f_out.write(bytes_out[idx:idx+max_bytes])
 	except:
 		pass
+"""
 
+data_scored = preprocessing.load_data("scored")
+imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
+scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
+scored_data = np.concatenate((imgs,scores), axis = 1)
+labeled_data = preprocessing.load_data("labeled")
+imgs = np.reshape(np.array(labeled_data['img'].values), (-1,1)) #dim: 9600*1000*1000
+labels = np.reshape(np.array(labeled_data['labeled'].values), (-1,1)) #dim: 9600
+labeled_data = np.concatenate((imgs,labels), axis = 1)
 print("Data loaded")
 
 # Randomly shuffle data
