@@ -76,9 +76,12 @@ else:
 	max_bytes = 2**31 - 1
 	bytes_out = pickle.dumps(scored_data)
 	n_bytes = sys.getsizeof(bytes_out)
-	with open("score.pickle", 'wb') as f_out:
-		for idx in range(0, n_bytes, max_bytes):
-			f_out.write(bytes_out[idx:idx+max_bytes])
+	try:
+		with open("score.pickle", 'wb') as f_out:
+			for idx in range(0, n_bytes, max_bytes):
+				f_out.write(bytes_out[idx:idx+max_bytes])
+	except:
+		pass
 
 ##### same for labell
 if os.path.isfile("label.pickle"):
@@ -98,9 +101,12 @@ else:
 	max_bytes = 2**31 - 1
 	bytes_out = pickle.dumps(labeled_data)
 	n_bytes = sys.getsizeof(bytes_out)
-	with open("label.pickle", 'wb') as f_out:
-		for idx in range(0, n_bytes, max_bytes):
-			f_out.write(bytes_out[idx:idx+max_bytes])
+	try:
+		with open("label.pickle", 'wb') as f_out:
+			for idx in range(0, n_bytes, max_bytes):
+				f_out.write(bytes_out[idx:idx+max_bytes])
+	except:
+		pass
 
 print("Data loaded")
 
