@@ -1,5 +1,6 @@
 from src import preprocessing
-from src.model.model_skeleton import ####
+from config import *
+from src.model.model_skeleton import *
 
 import tensorflow as tf
 import os
@@ -8,11 +9,17 @@ import os
 To predict
 """
 
+run_number =1529046033
+
+
+
+
 ## PARAMETERS ##
 
 # Data loading parameters
-tf.flags.DEFINE_string("data_file_path", "/data/sentences_test.txt", "Path to the test data. This data should be distinct from the training data.")
+tf.flags.DEFINE_string("data_file_path", test_path, "Path to the test data. This data should be distinct from the training data.")
 tf.flags.DEFINE_integer("train run number", run_number, "")
+
 # Test parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_string("checkpoint_dir", "./runs/{}/checkpoints/".format(run_number), "Checkpoint directory from training run")
@@ -46,22 +53,37 @@ with graph.as_default():
 		# Load the saved meta graph and restore variables
 		saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
 		saver.restore(sess, checkpoint_file)
+		print("Model restored.")
+
+		# Getting names of all variables #Can remove that afterwords
+		for op in graph.get_operations():
+			print(op.name)
+		# print([n.name for n in tf.get_default_graph().as_graph_def().node] if "Variable" in n.op)
 
 		# Get the placeholders from the graph by name
-		input = graph.get_operation_by_name("input_img").outputs[0]
+		input_img = graph.get_operation_by_name("input_img").outputs[0]
+		input = tf.expand_dims(input_img, 3) #taken from model_skeleton
+		print(input)
 
 		# Tensors we want to evaluate
-		scores = graph.get_operation_by_name("output/score_pred").outputs[0]
+		scores = graph.get_operation_by_name("output/score_pred/Relu").outputs[0]
+		print(scores)
+
+		# Load test data
+		data_scored = preprocessing.load_data("scored")
+		imgs = np.reshape(np.array(data_scored['img'].values), (-1, 1))  # dim: 9600*1000*1000
+
 
 		# Generate batches for one epoch
 		batches = preprocessing.batch_iter(list(x_test), FLAGS.batch_size, 1, shuffle=False)
 
-		timestamp = str(run_number)
-		out_dir = os.path.abspath(os.path.join(os.path.curdir, "perplexities"))
+		""" Output directory for models and summaries """
+		# timestamp = str(run_number)
+		out_dir = os.path.abspath(os.path.join(os.path.curdir, runs_dir))
 		
-		# Create the directory perplexities
-		if not os.path.exists(out_dir):
-			os.makedirs(out_dir)
+		# # Create the directory perplexities
+		# if not os.path.exists(out_dir):
+		# 	os.makedirs(out_dir)
 
 		#out_dir = os.path.abspath(os.path.join(out_dir, timestamp))
 		#for final submission

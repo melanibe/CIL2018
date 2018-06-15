@@ -29,7 +29,7 @@ class Discriminator(object):
 		if discr_type == "regressor":
 			self.scores = tf.placeholder(tf.float32, [None], name='scores')
 			print(tf.shape(self.scores))
-		else:
+		else: #dicr_type=="discriminator"
 			self.labels = tf.placeholder(tf.int32, [None], name='labels')
 
 		batch_size = tf.shape(self.input_img)[0]
@@ -41,25 +41,25 @@ class Discriminator(object):
 				if (reuse):
 					tf.get_variable_scope().reuse_variables()
 				# First Conv and Pool Layers
-				h_conv1 = tf.layers.conv2d(inputs= self.input, \
-											filters=out_channels1, \
-											kernel_size=[filter_height, filter_width], \
-											padding="same", \
-											activation=tf.nn.relu)	
+				h_conv1 = tf.layers.conv2d(inputs= self.input,
+											filters=out_channels1,
+											kernel_size=[filter_height, filter_width],
+											padding="same",
+											activation=tf.nn.relu)
 				h_pool1 = self.avg_pool_2x2(h_conv1) 
 				print(tf.shape(h_pool1))
 				# Second Conv and Pool Layers
-				h_conv2 = tf.layers.conv2d(inputs= h_pool1, \
-										 	filters=out_channels2, \
+				h_conv2 = tf.layers.conv2d(inputs= h_pool1,
+											filters=out_channels2,
 											kernel_size=[filter_height, filter_width],
 											padding="same",\
 											activation=tf.nn.relu)
 				h_pool2 = self.avg_pool_2x2(h_conv2) #batch*3200*3200*outchan2
-				print(h_pool2.get_shape())
+				print("Shape h_pool2: {}".format(h_pool2.get_shape()))
 				shape = h_pool2.get_shape()
 				# h_pool2 has to be reshaped before dense layer !
 				pool2_flat = tf.reshape(h_pool2, [-1, shape[1]*shape[2]*shape[3]]) #check ok.
-				print(pool2_flat.get_shape())
+				print("Shape pool2_flat: {}".format(pool2_flat.get_shape()))
 
 			#with tf.name_scope("fully connected"):
 			#	h_fc1 = tf.layers.dense(h_fc1, units= n_hidden_fconnected, activation=None)
@@ -68,7 +68,7 @@ class Discriminator(object):
 				#activation reLu beause obvisouly don't want negative number anyway
 				if discr_type == "regressor":
 					#added maximum 8 after layer as 8 max score possible
-					predictions_score = tf.reshape(tf.maximum(8.0, tf.layers.dense(pool2_flat, units=1, activation=tf.nn.relu, name="score_pred")), [-1])
+					predictions_score = tf.reshape(tf.minimum(8.0, tf.layers.dense(pool2_flat, units=1, activation=tf.nn.relu, name="score_pred")), [-1])
 				else:
 					logits = tf.layers.dense(pool2_flat, units=2, activation=tf.nn.relu, name="logits")
 					predictions_labels = tf.argmax(logits)
@@ -77,7 +77,7 @@ class Discriminator(object):
 				print(batch_size)
 				if discr_type == "regressor":
 					self.loss= tf.losses.mean_squared_error(labels=self.scores, predictions = predictions_score)
-				else:
+				else:  # dicr_type=="discriminator"
 					self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = self.labels, logits = logits))
 
 	def avg_pool_2x2(self, x):

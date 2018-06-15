@@ -27,7 +27,7 @@ def load_data(type, path=None, csv_file = None):  # type=labeled or scored (quer
 		img    [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,...
 		Name: 1000956, dtype: object
 	"""
-	print("Starting the preprocessing...")
+	print("Starting the preprocessing for {}...".format(str(type)))
 	result = pd.DataFrame()
 	images_array=[]
 	ids = []  # name of the images to retrieve in csv file
