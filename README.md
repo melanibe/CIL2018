@@ -8,4 +8,4 @@ The goal is to train a generative model that can generate images of galaxies obs
 * 1200 labeled images
 
 ### Evaluation Metrics: <br/>
-Similarity score prediction (MAE)
+Similarity score prediction (MAE i.e. Mean Absolute Error)
