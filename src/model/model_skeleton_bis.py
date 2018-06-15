@@ -59,7 +59,9 @@ class Discriminator(object):
 			with tf.name_scope("output"):
 				if discr_type == "regressor":
 					#added maximum 8 after layer as 8 max score possible
-					predictions_score = tf.reshape(tf.minimum(8.0, tf.layers.dense(h_fc1, units=1, activation=tf.nn.relu)),\
+					#predictions_score = tf.reshape(tf.minimum(8.0, tf.layers.dense(h_fc1, units=1, activation=tf.nn.relu)),\
+												 #[-1], name="score_pred")
+					predictions_score = tf.reshape(tf.layers.dense(h_fc1, units=1, activation=None),\
 												 [-1], name="score_pred")
 				else:
 					logits = tf.layers.dense(pool2_flat, units=2, activation=None, name="logits")
@@ -70,7 +72,7 @@ class Discriminator(object):
 				if discr_type == "regressor":
 					#using the loss of Kaggle
 					self.loss = tf.losses.absolute_difference(labels=self.scores, predictions = predictions_score, reduction=tf.losses.Reduction.MEAN)
-					#self.loss= tf.losses.mean_squared_error(labels=self.scores, predictions = predictions_score)
+				#	self.loss= tf.losses.mean_squared_error(labels=self.scores, predictions = predictions_score)
 				else:
 					self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = self.labels, logits = logits))
 

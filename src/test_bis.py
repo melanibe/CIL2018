@@ -71,7 +71,7 @@ with graph.as_default():
 		out_file = os.path.abspath(os.path.join(out_dir, "{}".format(timestamp)))
 		print("Writing to {}\n".format(out_file))
 
-		with open("{}.csv".format(out_dir),"w") as file:
+		with open("{}.csv".format(out_file),"w") as file:
 			file.write('Id,Predicted\n') #create the header
 			for test_batch in batches: # 
 				batch_imgs = np.reshape(np.concatenate(test_batch[:, 0]), (-1,1000,1000))
@@ -79,4 +79,4 @@ with graph.as_default():
 				batch_scores = sess.run(scores, {input: batch_imgs})
 				for i in range(len(batch_scores)):
 					# Write perplexity in ./perplexities/
-					file.write('{},{}\n'.format(batch_id[i], batch_scores[i])) #csv id, score
+					file.write('{},{}\n'.format(batch_id[i],min(8.0,max(0.0,batch_scores[i])))) #csv id, score
