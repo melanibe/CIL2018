@@ -79,4 +79,4 @@ with graph.as_default():
 				batch_scores = sess.run(scores, {input: batch_imgs})
 				for i in range(len(batch_scores)):
 					# Write perplexity in ./perplexities/
-					file.write('{},{}\n'.format(batch_id[i], batch_scores[i])) #csv id, score
+					file.write('{},{}\n'.format(batch_id[i],min(8.0,max(0.0,batch_scores[i])))) #csv id, score
