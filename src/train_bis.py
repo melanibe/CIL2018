@@ -1,5 +1,5 @@
 import preprocessing
-from model.model_skeleton import Discriminator
+from model.model_skeleton_bis import Discriminator
 from config import *
 import pandas as pd
 
@@ -24,14 +24,13 @@ tf.flags.DEFINE_float("dev_sample_percentage", .01, "Percentage of the training 
 # Model parameters
 tf.flags.DEFINE_boolean("reuse", False, "reuse")
 tf.flags.DEFINE_string("discr_type", "regressor", "type of discriminant")
-tf.flags.DEFINE_integer("filter_height", 5, "filter_height")
-tf.flags.DEFINE_integer("filter_width", 5, "filter_width")
-tf.flags.DEFINE_integer("out_channels1", 3, "out_channels1")
-tf.flags.DEFINE_integer("out_channels2", 3, "out_channels2")
+tf.flags.DEFINE_integer("filter_height", 10, "filter_height")
+tf.flags.DEFINE_integer("filter_width", 10, "filter_width")
+tf.flags.DEFINE_integer("out_channels1", 64, "out_channels1")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 20, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("num_epochs", 60, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 2, "Number of checkpoints to store (default: 5)")
@@ -59,7 +58,7 @@ print("")
 print("Loading and preprocessing training... \n")
 
 # Saving or loading the objects:
-""" too big for cluster"""
+""" too big for cluster
 if os.path.isfile("score.pickle"):
 	max_bytes = 2**31 - 1
 	input_size = os.path.getsize("score.pickle")
@@ -108,8 +107,8 @@ else:
 				f_out.write(bytes_out[idx:idx+max_bytes])
 	except:
 		pass
-"""
 
+"""
 data_scored = preprocessing.load_data("scored")
 imgs = np.reshape(np.array(data_scored['img'].values), (-1,1)) #dim: 9600*1000*1000
 scores = np.reshape(np.array(data_scored['scored'].values), (-1,1)) #dim: 9600
@@ -118,8 +117,9 @@ labeled_data = preprocessing.load_data("labeled")
 imgs = np.reshape(np.array(labeled_data['img'].values), (-1,1)) #dim: 9600*1000*1000
 labels = np.reshape(np.array(labeled_data['labeled'].values), (-1,1)) #dim: 9600
 labeled_data = np.concatenate((imgs,labels), axis = 1)
+
+
 print("Data loaded")
-"""
 # Randomly shuffle data
 np.random.seed(10)
 
@@ -133,9 +133,6 @@ test_scored = scored_data[test_indices,:]
 #needed for dev step
 test_score_imgs = np.reshape(np.concatenate(test_scored[:, 0]), (-1,1000,1000))
 test_score = np.reshape(test_scored[:, 1], (-1))
-#just to check
-#print(np.shape(train_score)) #9600 * 2 one dimension per column but first column is 9600*9600
-#print(train_score[0]) # 9600*9600
 
 
 #train/test split for labels
@@ -150,7 +147,7 @@ test_label_imgs = np.reshape(np.concatenate(test_labeled[:, 0]), (-1,1000,1000))
 test_label = np.reshape(test_labeled[:, 1], (-1))
 
 # Generate training batches 
-batches_label = preprocessing.batch_iter(train_label, FLAGS.batch_size, FLAGS.num_epochs) #have to check if the function still works with only one input x
+batches_label = preprocessing.batch_iter(train_label, FLAGS.batch_size, FLAGS.num_epochs) 
 batches_score = preprocessing.batch_iter(train_score, FLAGS.batch_size, FLAGS.num_epochs)
 
 
@@ -171,8 +168,7 @@ with graph.as_default():
 							discr_type=FLAGS.discr_type, \
 							filter_height = FLAGS.filter_height,\
 							 filter_width = FLAGS.filter_width, \
-							 out_channels1 = FLAGS.out_channels1, \
-							 out_channels2 = FLAGS.out_channels2)
+							 out_channels1 = FLAGS.out_channels1)
 
 		# Define an optimizer with clipping the gradients
 		global_step = tf.Variable(0, name="global_step", trainable= False)
@@ -260,9 +256,6 @@ with graph.as_default():
 		#####we only could modify this later to train one discriminator on both
 		if FLAGS.discr_type=="regressor":
 			for batch in batches_score:
-				#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
-				#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
-				#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
 				batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
 				batch_score = np.reshape(batch[:, 1], (-1))
 				train_step(batch_imgs, batch_score) 
@@ -276,9 +269,6 @@ with graph.as_default():
 					print("Saved model checkpoint to {}\n".format(path))
 		else:
 			for batch in batches_label:
-				#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
-				#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
-				#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
 				batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
 				batch_score = np.reshape(batch[:, 1], (-1))
 				train_step(batch_imgs, batch_score) 

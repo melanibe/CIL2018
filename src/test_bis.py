@@ -1,5 +1,5 @@
 import preprocessing
-from model import model_skeleton
+from model import model_skeleton_bis
 import numpy as np
 import tensorflow as tf
 import os
@@ -72,7 +72,7 @@ with graph.as_default():
 		print("Writing to {}\n".format(out_file))
 
 		with open("{}.csv".format(out_dir),"w") as file:
-			file.write('Id,Predicted\n') #create the header required
+			file.write('Id,Predicted\n') #create the header
 			for test_batch in batches: # 
 				batch_imgs = np.reshape(np.concatenate(test_batch[:, 0]), (-1,1000,1000))
 				batch_id = np.reshape(test_batch[:, 1], (-1))
