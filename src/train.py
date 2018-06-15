@@ -26,8 +26,8 @@ tf.flags.DEFINE_boolean("reuse", False, "reuse")
 tf.flags.DEFINE_string("discr_type", "regressor", "type of discriminant")
 tf.flags.DEFINE_integer("filter_height", 5, "filter_height")
 tf.flags.DEFINE_integer("filter_width", 5, "filter_width")
-tf.flags.DEFINE_integer("out_channels1", 8, "out_channels1")
-tf.flags.DEFINE_integer("out_channels2", 8, "out_channels2")
+tf.flags.DEFINE_integer("out_channels1", 3, "out_channels1")
+tf.flags.DEFINE_integer("out_channels2", 3, "out_channels2")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -59,7 +59,7 @@ print("")
 print("Loading and preprocessing training... \n")
 
 # Saving or loading the objects:
-""" too big for cluster
+""" too big for cluster"""
 if os.path.isfile("score.pickle"):
 	max_bytes = 2**31 - 1
 	input_size = os.path.getsize("score.pickle")
@@ -119,7 +119,7 @@ imgs = np.reshape(np.array(labeled_data['img'].values), (-1,1)) #dim: 9600*1000*
 labels = np.reshape(np.array(labeled_data['labeled'].values), (-1,1)) #dim: 9600
 labeled_data = np.concatenate((imgs,labels), axis = 1)
 print("Data loaded")
-
+"""
 # Randomly shuffle data
 np.random.seed(10)
 

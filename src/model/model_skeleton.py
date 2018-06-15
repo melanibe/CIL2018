@@ -68,7 +68,7 @@ class Discriminator(object):
 				#activation reLu beause obvisouly don't want negative number anyway
 				if discr_type == "regressor":
 					#added maximum 8 after layer as 8 max score possible
-					predictions_score = tf.reshape(tf.maximum(8.0, tf.layers.dense(pool2_flat, units=1, activation=tf.nn.relu, name="score_pred")), [-1])
+					predictions_score = tf.reshape(tf.minimum(8.0, tf.layers.dense(pool2_flat, units=1, activation=tf.nn.relu)), [-1], name="score_pred")
 				else:
 					logits = tf.layers.dense(pool2_flat, units=2, activation=tf.nn.relu, name="logits")
 					predictions_labels = tf.argmax(logits)
@@ -76,7 +76,8 @@ class Discriminator(object):
 			with tf.name_scope("loss"):
 				print(batch_size)
 				if discr_type == "regressor":
-					self.loss= tf.losses.mean_squared_error(labels=self.scores, predictions = predictions_score)
+					#self.loss= tf.losses.mean_squared_error(labels=self.scores, predictions = predictions_score)
+					self.loss = tf.losses.absolute_difference(labels=self.scores, predictions = predictions_score, reduction=tf.losses.Reduction.MEAN)
 				else:
 					self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels = self.labels, logits = logits))
 
