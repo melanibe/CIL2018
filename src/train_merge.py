@@ -262,7 +262,7 @@ with graph.as_default():
 			batch_imgs_score = np.reshape(np.concatenate(batch_score[:, 0]), (-1,1000,1000))
 			batch_label = np.reshape(batch_label[:, 1], (-1))
 			batch_score = np.reshape(batch_score[:, 1], (-1))
-			if np.shape(batch_label)[0]==FLAGS.batch_size:
+			if np.shape(batch_label)[0]==np.shape(batch_score)[0]:
 				train_step(batch_imgs_score, batch_imgs_label, batch_score, batch_label) 
 				current_step = tf.train.global_step(sess, global_step)
 			if current_step % FLAGS.evaluate_every == 0:
