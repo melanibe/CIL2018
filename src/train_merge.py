@@ -140,7 +140,7 @@ test_score = np.reshape(test_scored[:, 1], (-1))
 
 #train/test split for labels
 shuffled_indices = np.random.permutation(len(labeled_data))
-dev_sample_index = int(FLAGS.dev_sample_percentage * float(len(shuffled_indices)))
+#dev_sample_index = int(FLAGS.dev_sample_percentage * float(len(shuffled_indices))) to avoid crash on eval
 test_indices = shuffled_indices[:dev_sample_index]
 train_indices = shuffled_indices[dev_sample_index:]
 train_label = labeled_data[train_indices,:]
