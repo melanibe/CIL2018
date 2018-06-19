@@ -1,5 +1,5 @@
 import preprocessing
-from model.model_skeleton_merge import Discriminator
+from model.model_skeleton_ls import Discriminator
 from config import *
 import pandas as pd
 
@@ -31,7 +31,8 @@ tf.flags.DEFINE_integer("out_channels2", 3, "out_channels2")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 2, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("num_epochs_label", 20, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("num_epochs_score", 20, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 2, "Number of checkpoints to store (default: 5)")
@@ -140,7 +141,7 @@ test_score = np.reshape(test_scored[:, 1], (-1))
 
 #train/test split for labels
 shuffled_indices = np.random.permutation(len(labeled_data))
-#dev_sample_index = int(FLAGS.dev_sample_percentage * float(len(shuffled_indices))) to avoid crash on eval
+dev_sample_index = int(FLAGS.dev_sample_percentage * float(len(shuffled_indices)))
 test_indices = shuffled_indices[:dev_sample_index]
 train_indices = shuffled_indices[dev_sample_index:]
 train_label = labeled_data[train_indices,:]
@@ -150,8 +151,8 @@ test_label_imgs = np.reshape(np.concatenate(test_labeled[:, 0]), (-1,1000,1000))
 test_label = np.reshape(test_labeled[:, 1], (-1))
 
 # Generate training batches 
-batches_label = preprocessing.batch_iter(train_label, FLAGS.batch_size, FLAGS.num_epochs) #have to check if the function still works with only one input x
-batches_score = preprocessing.batch_iter(train_score, FLAGS.batch_size, FLAGS.num_epochs)
+batches_label = preprocessing.batch_iter(train_label, FLAGS.batch_size, FLAGS.num_epochs_label) #have to check if the function still works with only one input x
+batches_score = preprocessing.batch_iter(train_score, FLAGS.batch_size, FLAGS.num_epochs_score)
 
 
 ## MODEL AND TRAINING PROCEDURE DEFINITION ##
@@ -168,11 +169,11 @@ with graph.as_default():
 	with sess.as_default():
 		# Initialize model
 		discr = Discriminator(reuse=FLAGS.reuse, \
-							discr_type=FLAGS.discr_type, \
 							filter_height = FLAGS.filter_height,\
 							 filter_width = FLAGS.filter_width, \
 							 out_channels1 = FLAGS.out_channels1, \
 							 out_channels2 = FLAGS.out_channels2)
+
 
 		# Define an optimizer with clipping the gradients
 		global_step = tf.Variable(0, name="global_step", trainable= False)
@@ -212,20 +213,23 @@ with graph.as_default():
 		sess.run(tf.global_variables_initializer())
 		sess.graph.finalize()
 
-
-
 		# Define training and dev steps (batch)
-		def train_step(batch_imgs_score, batch_imgs_label, batch_score, batch_label):
+		def train_step(batch_imgs, batch_score, type):
 			"""
 			A single training step
 			"""
-
-			feed_dict = {
-				discr.input_img_score: batch_imgs_score,
-				discr.input_img_label: batch_imgs_label,
-				discr.scores: batch_score,
-				discr.labels: batch_label
-			}				
+			if type == "regressor":
+				feed_dict = {
+					discr.input_img: batch_imgs,
+					discr.discr_type: 0,
+					discr.y: batch_score
+				}
+			else:
+				feed_dict = {
+					discr.input_img: batch_imgs,
+					discr.discr_type: 1,
+					discr.y: batch_score
+				}				
 			_, step, summaries, loss = sess.run(
 				[train_op, global_step, train_summary_op, discr.loss],
 				feed_dict)
@@ -233,16 +237,22 @@ with graph.as_default():
 			print("{}: step {}, loss {:g}".format(time_str, step, loss))
 			train_summary_writer.add_summary(summaries, step)
 
-		def dev_step(batch_imgs_score, batch_imgs_label, batch_score, batch_label, writer=None):
+		def dev_step(batch_imgs, batch_score, type= FLAGS.discr_type, writer=None):
 			"""
 			Evaluates model on a dev set
 			"""
-			feed_dict = {
-				discr.input_img_score: batch_imgs_score,
-				discr.input_img_label: batch_imgs_label,
-				discr.scores: batch_score,
-				discr.labels: batch_label
-			}	
+			if type == "regressor":
+				feed_dict = {
+					discr.input_img: batch_imgs,
+					discr.y: batch_score,
+					discr.discr_type: 0
+				}
+			else:
+				feed_dict = {
+					discr.input_img: batch_imgs,
+					discr.y: batch_score,
+					discr.discr_type: 1
+				}
 			step, summaries, loss = sess.run(
 				[global_step, dev_summary_op, discr.loss],
 				feed_dict)
@@ -253,57 +263,38 @@ with graph.as_default():
 
 		## TRAINING LOOP ##  
 		#####we only could modify this later to train one discriminator on both
-		iteration = 0
-		for batch_label, batch_score in zip(batches_label, batches_score):
+
+		
+		for batch in batches_label:
 			#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
 			#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
 			#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
-			batch_imgs_label = np.reshape(np.concatenate(batch_label[:, 0]), (-1,1000,1000))
-			batch_imgs_score = np.reshape(np.concatenate(batch_score[:, 0]), (-1,1000,1000))
-			batch_label = np.reshape(batch_label[:, 1], (-1))
-			batch_score = np.reshape(batch_score[:, 1], (-1))
-			if np.shape(batch_label)[0]==np.shape(batch_score)[0]:
-				train_step(batch_imgs_score, batch_imgs_label, batch_score, batch_label) 
-				current_step = tf.train.global_step(sess, global_step)
+			batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
+			batch_score = np.reshape(batch[:, 1], (-1))
+			train_step(batch_imgs, batch_score,type = "discriminator") 
+			current_step = tf.train.global_step(sess, global_step)
 			if current_step % FLAGS.evaluate_every == 0:
-				print("\nEvaluation labels:")
-				dev_step(test_score_imgs,test_label_imgs, test_score, test_label, writer=dev_summary_writer)
+				print("\nEvaluation:")
+				dev_step(test_label_imgs, test_label, type = "discriminator", writer=dev_summary_writer)
 				print("")
 			if current_step % FLAGS.checkpoint_every == 0:
 				path = saver.save(sess, checkpoint_prefix, global_step=current_step)
 				print("Saved model checkpoint to {}\n".format(path))
-			iteration += 1
 
+		for batch in batches_score:
+			#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
+			#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
+			#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
+			print("Using scores...")
+			batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
+			batch_score = np.reshape(batch[:, 1], (-1))
+			train_step(batch_imgs, batch_score, type = "regressor") 
+			current_step = tf.train.global_step(sess, global_step)
+			if current_step % FLAGS.evaluate_every == 0:
+				print("\nEvaluation:")
+				dev_step(test_score_imgs, test_score, type = "regressor", writer=dev_summary_writer)
+				print("")
+			if current_step % FLAGS.checkpoint_every == 0:
+				path = saver.save(sess, checkpoint_prefix, global_step=current_step)
+				print("Saved model checkpoint to {}\n".format(path))
 
-		# if FLAGS.discr_type=="regressor":
-		# 	for batch in batches_score:
-		# 		#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
-		# 		#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
-		# 		#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
-		# 		batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
-		# 		batch_score = np.reshape(batch[:, 1], (-1))
-		# 		train_step(batch_imgs, batch_score, type = "regressor") 
-		# 		current_step = tf.train.global_step(sess, global_step)
-		# 		if current_step % FLAGS.evaluate_every == 0:
-		# 			print("\nEvaluation:")
-		# 			dev_step(test_score_imgs, test_score, type = "regressor", writer=dev_summary_writer)
-		# 			print("")
-		# 		if current_step % FLAGS.checkpoint_every == 0:
-		# 			path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-		# 			print("Saved model checkpoint to {}\n".format(path))
-		# else:
-		# 	for batch in batches_label:
-		# 		#print(np.shape(np.concatenate(batch[:, 0]))) #64000*1000
-		# 		#print(np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[0]) #need batch*1000*1000
-		# 		#print(np.all(batch[10,0]==np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))[10])) #to test it is still equal
-		# 		batch_imgs = np.reshape(np.concatenate(batch[:, 0]), (-1,1000,1000))
-		# 		batch_score = np.reshape(batch[:, 1], (-1))
-		# 		train_step(batch_imgs, batch_score, type = "discriminator",) 
-		# 		current_step = tf.train.global_step(sess, global_step)
-		# 		if current_step % FLAGS.evaluate_every == 0:
-		# 			print("\nEvaluation:")
-		# 			dev_step(test_label_imgs, test_label, type = "discriminator", writer=dev_summary_writer)
-		# 			print("")
-		# 		if current_step % FLAGS.checkpoint_every == 0:
-		# 			path = saver.save(sess, checkpoint_prefix, global_step=current_step)
-		# 			print("Saved model checkpoint to {}\n".format(path))
