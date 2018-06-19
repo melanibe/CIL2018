@@ -42,7 +42,8 @@ class Discriminator(object):
 					tf.get_variable_scope().reuse_variables()
 				# First Conv and Pool Layers
 				h_pool = self.avg_pool_2x2(self.input)
-				h_pool0 = self.avg_pool_2x2(h_pool)
+				h_pool01 = self.avg_pool_2x2(h_pool)
+				h_pool0 = self.avg_pool_2x2(h_pool01)
 				h_conv1 = tf.layers.conv2d(inputs= h_pool0, \
 											filters=out_channels1, \
 											kernel_size=[filter_height, filter_width], \

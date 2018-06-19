@@ -41,9 +41,8 @@ class Discriminator(object):
 				if (reuse):
 					tf.get_variable_scope().reuse_variables()
 				# First Conv and Pool Layers
-				h_pool = self.avg_pool_2x2(self.input)
-				h_pool0 = self.avg_pool_2x2(h_pool)
-				h_conv1 = tf.layers.conv2d(inputs= h_pool0, \
+				#h_pool0 = self.avg_pool_2x2(self.input)
+				h_conv1 = tf.layers.conv2d(inputs= self.input, \
 											filters=out_channels1, \
 											kernel_size=[filter_height, filter_width], \
 											padding="same", \
@@ -62,11 +61,17 @@ class Discriminator(object):
 											kernel_size=[filter_height, filter_width],
 											padding="same",\
 											activation=tf.nn.relu)
-				h_pool3 = self.avg_pool_2x2(h_conv3) #batch*3200*3200*outchan2                
-				print(h_pool3.get_shape())
-				shape = h_pool3.get_shape()
+				h_pool3 = self.avg_pool_2x2(h_conv3) #batch*3200*3200*outchan2  
+				h_conv4 = tf.layers.conv2d(inputs= h_pool3, \
+										 	filters=out_channels2, \
+											kernel_size=[filter_height, filter_width],
+											padding="same",\
+											activation=tf.nn.relu)
+				h_pool4 = self.avg_pool_2x2(h_conv4) #batch*3200*3200*outchan2                               
+				print(h_pool4.get_shape())
+				shape = h_pool4.get_shape()
 				# h_pool2 has to be reshaped before dense layer !
-				pool2_flat = tf.reshape(h_pool3, [-1, shape[1]*shape[2]*shape[3]]) #check ok.
+				pool2_flat = tf.reshape(h_pool4, [-1, shape[1]*shape[2]*shape[3]]) #check ok.
 				print(pool2_flat.get_shape())
 
 			with tf.name_scope("fully_connected"):
