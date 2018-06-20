@@ -18,7 +18,7 @@ https://github.com/soumith/ganhacks
 
 class Generator(object):
 
-    def __init__(self, z, batch_size, reuse=False, g_dim = 64, c_dim = 1):
+    def __init__(self, z, batch_size, reuse=False, g_dim = 100, c_dim = 1, filter_height=5, filter_width=5):
         """
 
         :param z: noise
@@ -48,14 +48,14 @@ class Generator(object):
         output_size = 1000  # Output size of the image
 
         # Deconvolution parameters
-        W_size = 5
+        self.filter_height = filter_height
+        self.filter_width = filter_width
 
         # reshaping input
         h0 = tf.reshape(z, [batch_size, upscale0, upscale0, 25])
         # Last integer of reshape must be such that z_dimensions = upscale0*upscale0* integer
         print('shape h0: {}'.format(h0.shape))
         h0 = tf.nn.relu(h0)
-        print('shape h0: {}'.format(h0.shape))
 
         # Dimensions of h0 = batch_size x 2 x 2 x 25
 
@@ -69,14 +69,13 @@ class Generator(object):
                 # output1_shape as 4-D array of images: (batch, height, width, channels)
                 output1_shape = [batch_size, upscale1, upscale1, g_dim*4]
                 print('output1_shape: {}'.format(output1_shape))
-                print('output1_shape[-1]: {}'.format(output1_shape[-1]))
 
                 print("int(h0.get_shape()[-1]): {}".format(int(h0.get_shape()[-1])))
-                W_conv1 = tf.get_variable('g_wconv1', [W_size, W_size, output1_shape[-1], int(h0.get_shape()[-1])],
+                W_conv1 = tf.get_variable('g_wconv1', [self.filter_height, self.filter_width, output1_shape[-1], int(h0.get_shape()[-1])],
                                           # [filter_height, filter_width, 1, out_channels1]
                                           initializer=tf.truncated_normal_initializer(stddev=0.1))
                 b_conv1 = tf.get_variable('g_bconv1', [output1_shape[-1]], initializer=tf.constant_initializer(.1))
-                H_conv1 = tf.nn.conv2d_transpose(h0, W_conv1, output_shape=output1_shape,
+                H_conv1 = tf.nn.conv2d_transpose(h0, filter=W_conv1, output_shape=output1_shape,
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv1
                 H_conv1 = tf.contrib.layers.batch_norm(inputs = H_conv1, center=True, scale=True, is_training=True, scope="g_bn1")
                 H_conv1 = tf.nn.relu(H_conv1)
@@ -85,10 +84,10 @@ class Generator(object):
                 # Second DeConv Layer
                 output2_shape = [batch_size, upscale2, upscale2, g_dim*2]
                 print("output2_shape: {}".format(output2_shape))
-                W_conv2 = tf.get_variable('g_wconv2', [W_size, W_size, output2_shape[-1], int(H_conv1.get_shape()[-1])],
+                W_conv2 = tf.get_variable('g_wconv2', [self.filter_height, self.filter_width, output2_shape[-1], int(H_conv1.get_shape()[-1])],
                                           initializer=tf.truncated_normal_initializer(stddev=0.1))
                 b_conv2 = tf.get_variable('g_bconv2', [output2_shape[-1]], initializer=tf.constant_initializer(.1))
-                H_conv2 = tf.nn.conv2d_transpose(H_conv1, W_conv2, output_shape=output2_shape,
+                H_conv2 = tf.nn.conv2d_transpose(H_conv1, filter=W_conv2, output_shape=output2_shape,
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv2
                 H_conv2 = tf.contrib.layers.batch_norm(inputs = H_conv2, center=True, scale=True, is_training=True, scope="g_bn2")
                 H_conv2 = tf.nn.relu(H_conv2)
@@ -98,10 +97,10 @@ class Generator(object):
                 output3_shape = [batch_size, upscale3, upscale3, g_dim*1]
                 print("output3_shape: {}".format(output3_shape))
 
-                W_conv3 = tf.get_variable('g_wconv3', [W_size, W_size, output3_shape[-1], int(H_conv2.get_shape()[-1])],
+                W_conv3 = tf.get_variable('g_wconv3', [self.filter_height, self.filter_width, output3_shape[-1], int(H_conv2.get_shape()[-1])],
                                           initializer=tf.truncated_normal_initializer(stddev=0.1))
                 b_conv3 = tf.get_variable('g_bconv3', [output3_shape[-1]], initializer=tf.constant_initializer(.1))
-                H_conv3 = tf.nn.conv2d_transpose(H_conv2, W_conv3, output_shape=output3_shape,
+                H_conv3 = tf.nn.conv2d_transpose(H_conv2, filter=W_conv3, output_shape=output3_shape,
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv3
                 H_conv3 = tf.contrib.layers.batch_norm(inputs = H_conv3, center=True, scale=True, is_training=True, scope="g_bn3")
                 H_conv3 = tf.nn.relu(H_conv3)
@@ -111,19 +110,19 @@ class Generator(object):
                 output4_shape = [batch_size, output_size, output_size, c_dim]
                 print("output4_shape: {}".format(output4_shape))
 
-                W_conv4 = tf.get_variable('g_wconv4', [W_size, W_size, output4_shape[-1], int(H_conv3.get_shape()[-1])],
+                W_conv4 = tf.get_variable('g_wconv4', [self.filter_height, self.filter_width, output4_shape[-1], int(H_conv3.get_shape()[-1])],
                                           initializer=tf.truncated_normal_initializer(stddev=0.1))
                 b_conv4 = tf.get_variable('g_bconv4', [output4_shape[-1]], initializer=tf.constant_initializer(.1))
-                H_conv4 = tf.nn.conv2d_transpose(H_conv3, W_conv4, output_shape=output4_shape,
+                H_conv4 = tf.nn.conv2d_transpose(H_conv3, filter=W_conv4, output_shape=output4_shape,
                                                  strides=[1, 2, 2, 1], padding='VALID') + b_conv4
                 H_conv4 = tf.nn.tanh(H_conv4)
                 # Dimensions of H_conv4 = batch_size x 1000 x 1000 x 1
-                print(H_conv4)
+                print("H_conv4: {}".format(H_conv4))
 
 
-#Just for testing if it works; REMOVE AFTER
+# Just for testing if it works; REMOVE AFTER
 if __name__ == "__main__":
     sess = tf.Session()
     z_dimensions = 100
     z_test_placeholder = tf.placeholder(tf.float32, [None, z_dimensions])
-    Generator(z=z_test_placeholder, batch_size=1, z_dim=z_dimensions)
+    Generator(z=z_test_placeholder, batch_size=1)
