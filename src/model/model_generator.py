@@ -18,7 +18,7 @@ https://github.com/soumith/ganhacks
 
 class Generator(object):
 
-    def __init__(self, z, batch_size, z_dim, reuse=False, g_dim = 64, c_dim = 1):
+    def __init__(self, z, batch_size, reuse=False, g_dim = 64, c_dim = 1):
         """
 
         :param z: noise
@@ -33,24 +33,22 @@ class Generator(object):
         self.g_dim = g_dim
         self.c_dim = c_dim
 
+        print("z: {}".format(z.shape))  # simple check
+
         # (When building network) - Network inputs
         self.input_noise = tf.placeholder(dtype=tf.float32, shape=[None, 1000, 1000], name='input_noise')
         # Add 1 dimension to input to have [batch, in_height, in_width, in_channels], where in_channels=1
         self.input_noise = tf.expand_dims(self.input_noise, 3)
-
-        # parameters to confirm
-        output_size = 1000  # Output size of the image
 
         # Gradual upscaling parameters
         upscale0 = 2   # int(output_size/16)+1, if output_size = 28
         upscale1 = 25  # int(output_size/8)
         upscale2 = 250  # int(output_size/4)-1
         upscale3 = 500  # int(output_size/2)-2
+        output_size = 1000  # Output size of the image
 
         # Deconvolution parameters
         W_size = 5
-
-        print("z: {}".format(z.shape))
 
         # reshaping input
         h0 = tf.reshape(z, [batch_size, upscale0, upscale0, 25])
@@ -82,7 +80,7 @@ class Generator(object):
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv1
                 H_conv1 = tf.contrib.layers.batch_norm(inputs = H_conv1, center=True, scale=True, is_training=True, scope="g_bn1")
                 H_conv1 = tf.nn.relu(H_conv1)
-                #Dimensions of H_conv1 = batch_size x 3 x 3 x 256
+                # Dimensions of H_conv1 = batch_size x 25 x 25 x 256
 
                 # Second DeConv Layer
                 output2_shape = [batch_size, upscale2, upscale2, g_dim*2]
@@ -94,7 +92,7 @@ class Generator(object):
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv2
                 H_conv2 = tf.contrib.layers.batch_norm(inputs = H_conv2, center=True, scale=True, is_training=True, scope="g_bn2")
                 H_conv2 = tf.nn.relu(H_conv2)
-                #Dimensions of H_conv2 = batch_size x 6 x 6 x 128
+                # Dimensions of H_conv2 = batch_size x 250 x 250 x 128
 
                 # Third DeConv Layer
                 output3_shape = [batch_size, upscale3, upscale3, g_dim*1]
@@ -107,7 +105,7 @@ class Generator(object):
                                                  strides=[1, 2, 2, 1], padding='SAME') + b_conv3
                 H_conv3 = tf.contrib.layers.batch_norm(inputs = H_conv3, center=True, scale=True, is_training=True, scope="g_bn3")
                 H_conv3 = tf.nn.relu(H_conv3)
-                #Dimensions of H_conv3 = batch_size x 12 x 12 x 64
+                # Dimensions of H_conv3 = batch_size x 500 x 500 x 64
 
                 # Fourth DeConv Layer
                 output4_shape = [batch_size, output_size, output_size, c_dim]
@@ -119,7 +117,7 @@ class Generator(object):
                 H_conv4 = tf.nn.conv2d_transpose(H_conv3, W_conv4, output_shape=output4_shape,
                                                  strides=[1, 2, 2, 1], padding='VALID') + b_conv4
                 H_conv4 = tf.nn.tanh(H_conv4)
-                #Dimensions of H_conv4 = batch_size x 28 x 28 x 1
+                # Dimensions of H_conv4 = batch_size x 1000 x 1000 x 1
                 print(H_conv4)
 
 
