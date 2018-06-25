@@ -9,7 +9,7 @@ To predict
 """
 cwd = os.getcwd()
 ## PARAMETERS ##
-run_number = 1529014670
+run_number = 1529416507
 # Data loading parameters
 #tf.flags.DEFINE_string("data_file_path", "/data/sentences_test.txt", "Path to the test data. This data should be distinct from the training data.")
 tf.flags.DEFINE_integer("train run number", run_number, "")
@@ -37,7 +37,7 @@ query_data = np.concatenate((imgs,id), axis = 1)
 
 ## EVALUATION ##
 #checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
-checkpoint_file = cwd+"/runs/{}/checkpoints/model-44500".format(run_number) #for running test locally with model from cluster
+checkpoint_file = cwd+"/runs/{}/checkpoints/model-18900".format(run_number) #for running test locally with model from cluster
 graph = tf.Graph()
 with graph.as_default():
 	session_conf = tf.ConfigProto(
@@ -60,7 +60,7 @@ with graph.as_default():
 		input = graph.get_operation_by_name("input_img").outputs[0]
 
 		# Tensors we want to evaluate
-		scores = graph.get_operation_by_name("output/Reshape").outputs[0] #this has to be changed to output/score_pred with the new version of model
+		scores = graph.get_operation_by_name("output/score_pred").outputs[0] #this has to be changed to output/score_pred with the new version of model
 
 		# Generate batches for one epoch
 		batches = preprocessing.batch_iter(query_data, FLAGS.batch_size, 1, shuffle=False)
@@ -85,4 +85,5 @@ with graph.as_default():
 				batch_scores = sess.run(scores, {input: batch_imgs})
 				for i in range(len(batch_scores)):
 					# Write perplexity in ./perplexities/
-					file.write('{},{}\n'.format(batch_id[i], batch_scores[i])) #csv id, score
+					tmp = max(0.0, min(8.0, batch_scores[i]))
+					file.write("{},{}\n".format(batch_id[i], tmp)) #csv id, score
