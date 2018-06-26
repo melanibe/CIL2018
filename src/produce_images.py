@@ -9,7 +9,7 @@ To produce the images
 """
 cwd = os.getcwd()
 ## PARAMETERS ##
-run_number = 1529931827
+run_number = 1530011289
 # Data loading parameters
 #tf.flags.DEFINE_string("data_file_path", "/data/sentences_test.txt", "Path to the test data. This data should be distinct from the training data.")
 tf.flags.DEFINE_integer("train run number", run_number, "")
@@ -31,7 +31,7 @@ print("")
 
 ## EVALUATION ##
 #checkpoint_file = tf.train.latest_checkpoint(FLAGS.checkpoint_dir)
-checkpoint_file = cwd+"/runs_gen/{}/checkpoints/model-800".format(run_number) #for running test locally with model from cluster
+checkpoint_file = cwd+"/runs_gen/{}/checkpoints/model-20000".format(run_number) #for running test locally with model from cluster
 graph = tf.Graph()
 with graph.as_default():
 	session_conf = tf.ConfigProto(
@@ -49,17 +49,22 @@ with graph.as_default():
 
 		# Tensors we want to evaluate
 		output_img  = graph.get_operation_by_name("deCNN/output_deconv/output_images").outputs[0] #this has to be changed to output/score_pred with the new version of model
-	
+		fake_score =   graph.get_operation_by_name("discr_1/output/score_pred").outputs[0]
 		# Create the directory produced
 		timestamp = str(run_number)
 		out_dir = cwd+"/produced/{}/".format(run_number)
 		if not os.path.exists(out_dir):
 			os.makedirs(out_dir)
-
-		for i in range(1): 
-			input_batch = np.random.normal(-1, 1, [FLAGS.batch_size, 100])
-			produced_arrays = np.reshape(sess.run([output_img], {input: input_batch}), (FLAGS.batch_size, 1000,1000))
-			print(np.shape(produced_arrays))
-			for j in range(len(produced_arrays)):
-				curr_array = np.maximum(0,np.minimum(255,produced_arrays[j])).astype(int)
-				io.imsave(cwd+"/produced/{}/{}.png".format(run_number,j), curr_array)
+		k=0
+		for i in range(100): 
+			while k<100:
+				input_batch = np.random.normal(0, 1, [FLAGS.batch_size, 100])
+				produced_arrays, pred_scores = sess.run([output_img, fake_score], {input: input_batch})
+				produced_arrays = np.reshape(produced_arrays, (FLAGS.batch_size, 1000,1000))
+				print(np.shape(produced_arrays))
+				for j in range(len(produced_arrays)):
+					if pred_scores[j]>2.5: #only keep the good images
+						print(pred_scores[j])
+						curr_array = np.maximum(-1,np.minimum(1,produced_arrays[j]))
+						io.imsave(cwd+"/produced/{}/{}.png".format(run_number,k), curr_array)
+						k = k+1
