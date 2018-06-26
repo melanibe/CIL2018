@@ -20,14 +20,15 @@ def generator(input_noise, batch_size):
 		with tf.name_scope("second_deconv"):
 			h2 = tf.layers.conv2d_transpose(h1_bis, filters = 8 , kernel_size=[5, 5], strides = 2, activation=tf.nn.relu, padding='SAME')
 			print(h2.get_shape()) #250,250,8
+			h2_perturbed = h2 + np.random.normal(0, 1, [batch_size, 250,250,8])
 		with tf.name_scope("third_deconv"):
-		 	h3 = tf.layers.conv2d_transpose(h2, filters = 4, kernel_size=[2, 2], strides = 2, activation=tf.nn.relu, padding='SAME')
+		 	h3 = tf.layers.conv2d_transpose(h2_perturbed, filters = 4, kernel_size=[5, 5], strides = 2, activation=tf.nn.relu, padding='SAME')
 		 	print(h3.get_shape()) #500,500,4
 		with tf.name_scope("output_deconv"):
-			h4 = tf.layers.conv2d_transpose(h3, filters = 1, kernel_size=[2, 2], strides = 2, activation=tf.nn.tanh, padding='SAME')
+			h4 = tf.layers.conv2d_transpose(h3, filters = 1, kernel_size=[5, 5], strides = 2, activation=tf.nn.tanh, padding='SAME')
 			print(h4.get_shape())
 			h_out = tf.reshape(h4,[-1, 1000, 1000], name="output_images")
-			h_out_perturbed = h_out + np.random.normal(0, 0.2, [batch_size, 1000,1000])
+			#h_out_perturbed = h_out + np.random.normal(0, 0.1, [batch_size, 1000,1000])
 			print(h_out.get_shape())
-		return h_out_perturbed 
+		return h_out 
 
