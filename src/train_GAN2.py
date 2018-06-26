@@ -17,7 +17,7 @@ from skimage import io
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epoches")
-tf.flags.DEFINE_integer("evaluate_every", 10, "Evaluate model on dev set after this many steps (default: 100)")
+tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 500, "Save model after this many steps (default: 500)")
 tf.flags.DEFINE_integer("num_checkpoints", 2, "Number of checkpoints to store (default: 5)")
 tf.flags.DEFINE_float("dev_sample_percentage", .01, "Percentage of the training data used for validation")
@@ -94,9 +94,9 @@ with graph.as_default():
 		# Defining the loss - objective score is 2.0
 		loss_discr = tf.losses.absolute_difference(labels=true_scores, predictions = score_true, reduction=tf.losses.Reduction.MEAN)
 		#loss_gen = tf.reduce_mean(tf.abs(2-class_scores_fake))
-		loss_gen = tf.losses.absolute_difference(labels=true_scores, predictions = score_fake, reduction=tf.losses.Reduction.MEAN)
 		var_gen = tf.nn.moments(score_fake, axes=0)[1]
-		
+		loss_gen = tf.losses.absolute_difference(labels=true_scores, predictions = score_fake, reduction=tf.losses.Reduction.MEAN)+tf.abs(var_gen-1)
+
 		# Define an optimizer with clipping the gradients
 		global_step = tf.Variable(0, name="global_step", trainable= False)
 		optimizer = tf.train.AdamOptimizer()
