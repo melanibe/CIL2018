@@ -34,8 +34,11 @@ def load_data(type, path=None, csv_file = None):  # type=labeled or scored (quer
 	if path == None:
 		path = data_folder + "{}/".format(type)
 	for image in os.listdir(path):
-		images_array.append((io.imread(os.path.join(path, image))))
-		ids.append(int(image.replace(".png","")))
+		try:
+			images_array.append((io.imread(os.path.join(path, image), as_grey=True)))
+			ids.append(int(image.replace(".png","")))
+		except:
+			pass
 	result['img'] = pd.Series(images_array, index=ids)
 	if type != 'query':
 		if csv_file == None:
@@ -69,6 +72,5 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 
 # For testing
 if __name__ == "__main__":
-	load_data(type='labeled', path=None, csv_file=None)
-	load_data(type='scored', path=None, csv_file=None)
-	load_data(type='query', path=None, csv_file=None)
+	x = load_data(type='labeled', path=None, csv_file=None)
+	#print(min(x.iloc[0, ['img']].values), max(x.iloc[0, ['img']].values))
