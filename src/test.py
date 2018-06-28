@@ -49,6 +49,12 @@ with graph.as_default():
 		# Load the saved meta graph and restore variables
 		saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
 		saver.restore(sess, checkpoint_file)
+		print("Model restored.")
+
+		# Getting names of all variables #Can remove that afterwords
+		for op in graph.get_operations():
+			print(op.name)
+		# print([n.name for n in tf.get_default_graph().as_graph_def().node] if "Variable" in n.op)
 
 		# Get the placeholders from the graph by name
 		input = graph.get_operation_by_name("input_img").outputs[0]
@@ -73,7 +79,7 @@ with graph.as_default():
 
 		with open("{}.csv".format(out_file),"w") as file:
 			file.write('Id,Predicted\n') #create the header required
-			for test_batch in batches: # 
+			for test_batch in batches: #
 				batch_imgs = np.reshape(np.concatenate(test_batch[:, 0]), (-1,1000,1000))
 				batch_id = np.reshape(test_batch[:, 1], (-1))
 				batch_scores = sess.run(scores, {input: batch_imgs})

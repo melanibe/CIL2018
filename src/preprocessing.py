@@ -5,6 +5,7 @@ from skimage import io
 from config import *
 from parmap import map
 
+
 def rotate_image(i, prep_low_images, number):
 	return(np.rot90(prep_low_images[i], number))
 
@@ -12,6 +13,7 @@ def get_value(i, prep_low_value):
 	return(prep_low_value[i])
 
 nproc = 32
+
 def load_data(type, path=None, csv_file = None, augmented=True):  # type=labeled or scored (query special case without csv later)
 	"""This function creates a dataframe with:
 			- a column containg the image (array)
@@ -77,6 +79,7 @@ def load_data(type, path=None, csv_file = None, augmented=True):  # type=labeled
 
 		print("Number of augmentation: {}".format(num_aug))
 		if num_aug==2:
+
 			rotated_1 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 1, pm_processes=32)
 			print("hello")
 			rotated_2 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 2, pm_processes=32)
@@ -145,5 +148,4 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 			start_index = batch_num * batch_size
 			end_index = min((batch_num + 1) * batch_size, data_size)
 			yield shuffled_data[start_index:end_index]
-
 
