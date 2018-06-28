@@ -3,6 +3,16 @@ import os
 import pandas as pd
 from skimage import io
 from config import *
+from parmap import map
+
+
+def rotate_image(i, prep_low_images, number):
+	return(np.rot90(prep_low_images[i], number))
+
+def get_value(i, prep_low_value):
+	return(prep_low_value[i])
+
+nproc = 32
 
 def load_data(type, path=None, csv_file = None, augmented=True):  # type=labeled or scored (query special case without csv later)
 	"""This function creates a dataframe with:
@@ -69,28 +79,28 @@ def load_data(type, path=None, csv_file = None, augmented=True):  # type=labeled
 
 		print("Number of augmentation: {}".format(num_aug))
 		if num_aug==2:
-			for i in range(0, len(prep_low[str(type)])):
-				rotated_df = pd.DataFrame({'img': [np.rot90(prep_low_images[i], 1),
-												   np.rot90(prep_low_images[i], 2)
-												   # np.rot90(prep_lowscored_images[i], 3)
-												   ],
-										   str(type): [prep_low_value[i],
-													  prep_low_value[i]
-													  # prep_lowscored_scores[i]
-													  ]})
-				prep_data = prep_data.append(rotated_df)
 
+			rotated_1 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 1, pm_processes=32)
+			print("hello")
+			rotated_2 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 2, pm_processes=32)
+			value = map(get_value, np.arange(len(prep_low[str(type)])), prep_low_value)
+			rotated_df = pd.DataFrame({'img': rotated_1,
+										   str(type): value})
+			prep_data = prep_data.append(rotated_df)
+			rotated_df = pd.DataFrame({'img': rotated_2,
+										   str(type): value})
+			prep_data = prep_data.append(rotated_df)						
 		elif num_aug == 3:
-			for i in range(0, len(prep_low[str(type)])):
-				rotated_df = pd.DataFrame({'img': [np.rot90(prep_low_images[i], 1),
-												   np.rot90(prep_low_images[i], 2),
-												   np.rot90(prep_low_images[i], 3)
-												   ],
-										   str(type): [prep_low_value[i],
-													   prep_low_value[i],
-													   prep_low_value[i]
-													   ]})
-				prep_data = prep_data.append(rotated_df)
+			rotated_1 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 1, pm_processes=nproc)
+			rotated_2 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 2, pm_processes=nproc)
+			rotated_3 = map(rotate_image, np.arange(len(prep_low[str(type)])), prep_low_images, 3, pm_processes=nproc)
+			value = map(get_value, np.arange(len(prep_low[str(type)])), prep_low_value)
+			rotated_df = pd.DataFrame({'img': rotated_1, str(type): value})
+			prep_data = prep_data.append(rotated_df)
+			rotated_df = pd.DataFrame({'img': rotated_2, str(type): value})
+			prep_data = prep_data.append(rotated_df)
+			rotated_df = pd.DataFrame({'img': rotated_3, str(type): value})
+			prep_data = prep_data.append(rotated_df)
 
 			# io.imsave(cwd +"/data/modified image{}_1.png", np.rot90(prep_lowscored_images[i], 1))
 			# io.imsave(cwd +"/data/modified image{}_2.png", np.rot90(prep_lowscored_images[i], 2))
@@ -139,9 +149,3 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 			end_index = min((batch_num + 1) * batch_size, data_size)
 			yield shuffled_data[start_index:end_index]
 
-
-# For testing
-if __name__ == "__main__":
-	x = load_data(type='labeled', path=None, csv_file=None)
-	#print(min(x.iloc[0, ['img']].values), max(x.iloc[0, ['img']].values))
-    print(x["img"][0])
