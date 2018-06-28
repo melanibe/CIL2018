@@ -4,7 +4,7 @@ import pandas as pd
 from skimage import io
 from config import *
 
-def load_data(type, path=None, csv_file = None):  # type=labeled or scored (query special case without csv later)
+def load_data(type, path=None, csv_file = None, augmented=True):  # type=labeled or scored (query special case without csv later)
 	"""This function creates a dataframe with:
 			- a column containg the image (array)
 			- a column 'labeled' with the label if type = labeled
@@ -46,7 +46,77 @@ def load_data(type, path=None, csv_file = None):  # type=labeled or scored (quer
 		# loading the score or the label
 		df = pd.read_csv(csv_file)
 		result[type]= pd.Series(df['Actual'].values, index=df['Id'].values)
-	return result
+
+	if augmented:
+		print('Augmenting data...')
+		prep_data = result
+
+		# We want to augment values whose score is under 1 (bad image) - augment to 2 (given data that we have)
+		if str(type)=='scored':
+			prep_low = prep_data[prep_data[str(type)] < 1.1]
+			num_aug = 2
+
+		# We want to augment number of images if label is 0 (bad image) - augment to 3 (given data that we have)
+		else: # type is labeled
+			prep_low = prep_data[prep_data[str(type)] == 0]
+			num_aug = 3
+
+		prep_low_images = np.asarray(prep_low['img'])
+		prep_low_value = np.asarray(prep_low[str(type)])
+
+		# print("Number of images: {}".format(len(prep_data[str(type)])))
+		print("Number of low value images: {}".format(len(prep_low_images)))
+
+		print("Number of augmentation: {}".format(num_aug))
+		if num_aug==2:
+			for i in range(0, len(prep_low[str(type)])):
+				rotated_df = pd.DataFrame({'img': [np.rot90(prep_low_images[i], 1),
+												   np.rot90(prep_low_images[i], 2)
+												   # np.rot90(prep_lowscored_images[i], 3)
+												   ],
+										   str(type): [prep_low_value[i],
+													  prep_low_value[i]
+													  # prep_lowscored_scores[i]
+													  ]})
+				prep_data = prep_data.append(rotated_df)
+
+		elif num_aug == 3:
+			for i in range(0, len(prep_low[str(type)])):
+				rotated_df = pd.DataFrame({'img': [np.rot90(prep_low_images[i], 1),
+												   np.rot90(prep_low_images[i], 2),
+												   np.rot90(prep_low_images[i], 3)
+												   ],
+										   str(type): [prep_low_value[i],
+													   prep_low_value[i],
+													   prep_low_value[i]
+													   ]})
+				prep_data = prep_data.append(rotated_df)
+
+			# io.imsave(cwd +"/data/modified image{}_1.png", np.rot90(prep_lowscored_images[i], 1))
+			# io.imsave(cwd +"/data/modified image{}_2.png", np.rot90(prep_lowscored_images[i], 2))
+			# io.imsave(cwd +"/data/modified image{}_3.png", np.rot90(prep_lowscored_images[i], 3))
+
+		if str(type) == 'scored':
+			print("Num images low value after augmentation: {}".format(
+			len(np.asarray(prep_data[prep_data[str(type)] < 1.1]['img']))))
+			print("Num images high value : {}".format(
+			len(np.asarray(prep_data[prep_data[str(type)] >= 1.1]['img']))))
+		else:
+			print("Num images low value after augmentation: {}".format(
+			len(np.asarray(prep_data[prep_data[str(type)] == 0]['img']))))
+			print("Num images high value: {}".format(
+			len(np.asarray(prep_data[prep_data[str(type)] != 0]['img']))))
+
+		print("Total number of images: {}".format(prep_data.shape[0]))
+
+		print("Saving increased data..")
+		path = data_folder + "/increased_" + str(type) + ".csv"
+		prep_data.to_csv(path, sep=',')
+		print("Saved the preprocessed data successfully as {}".format(path))
+		return prep_data
+
+	else:
+		return result
 
 
 # FUNCTION DEFINED IN SERIES 5 SOLUTION
@@ -74,3 +144,4 @@ def batch_iter(data, batch_size, num_epochs, shuffle=True):
 if __name__ == "__main__":
 	x = load_data(type='labeled', path=None, csv_file=None)
 	#print(min(x.iloc[0, ['img']].values), max(x.iloc[0, ['img']].values))
+    print(x["img"][0])
