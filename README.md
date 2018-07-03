@@ -16,7 +16,7 @@ NOTE : our code is working with Python 3.6 we assume that is the version install
 IMPORTANT : keep the exact structure of the code folder as submitted and to place the data and runs folder in this main folder (as indicated in step 1 of the following set-up procedure).
 
 Before using our code, please follow this procedure:
-* Download the `data` folder and the `runs` folder from polybox (under : ). The data folder contains all 3 subfolders containing the training images as well as the csv file containing the associated labels and scopres. The runs folder contains all fitted models (to avoid recomputation for reproducing the results).
+* Download the `data` folder and the `runs` folder from polybox (under: https://polybox.ethz.ch/index.php/f/1032408684). The data folder contains all 3 subfolders containing the training images as well as the csv file containing the associated labels and scopres. The runs folder contains all fitted models (to avoid recomputation for reproducing the results).
 * Place them in the root folder `CIL2018` (keeping the structure). And set the root folder `CIL2018` as current directory.
 * Run the pip requirement file to get all necessary packages for the project using `pip3 install -r requirements.txt`
 
