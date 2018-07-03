@@ -44,3 +44,15 @@ In order to make it easier for the reader to reproduce the results on our develo
        * Parameters to specify are:
     - Results are placed ....
             - place here the parameters once i have the final file.
+           
+ ### Generating images
+ To generate images for our final 2-in-1 model simply run `produce_images.py`. 
+ If you would like to use your own trained model just change `run_number` and `model_number` as in the previous sections.
+ 
+ ### Training the model from scratch
+ If you wish to re-train completely our 2-in-1 model instead of using the provided saved checkpoints you can use `train_2in1_model.py`:
+ * if you run it as is you will relaunch the exact same training procedure and parameters we used to build our saved final model (these are the default number of epochs, checkpoints, generator threshold training, batch size etc...)
+ * you can modify the parameters you want to test other training procedure in the first section of this file.
+ 
+ If you wish to re-train the score discriminator alone (without any generator or label discriminator) you can run `train_score_discr_alone.py`. Again running this file as it corresponds to the training we used for the model used to get the experiments results in the paper. You can modify the training procedure by modifying the parameters section at the beginning of the file. 
+ 
