@@ -13,7 +13,7 @@ The scientific report associated to this project can be found in this repository
 ### Reproducing the report results on the development set
 In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files: 
  * reproduce_neural_results_dev: 
-    ** This file 
+    - This file 
  * reproduce_baseline_results_dev:
  
  ### Reproducing the csv files for submission to Kaggle competition (test set)
