@@ -37,8 +37,10 @@ In order to make it easier for the reader to reproduce the results on our develo
             - `model_number: 22088`
         * Parameter to use to predict from the model which trains the score discriminant alone are:
             - `run_number: TO COMPLETE TOMORROW`
-            - `model_number: TO COMPLETE TOMORROW`  
+            - `model_number: TO COMPLETE TOMORROW`
+    - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `kaggle_prediction_baseline.py`:
     - Running this file creates a csv file containing the predicted score associated to a particular baseline (as described in the final report).
        * Parameters to specify are:
+    - Results are placed ....
             - place here the parameters once i have the final file.
