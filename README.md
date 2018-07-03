@@ -5,9 +5,9 @@ Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet
 In this project we build a 2-in-1 model that can generate images of galaxies observed by astronomical telescopes, and predict the similarity score of a set of query images with the same model.
 The scientific report associated to this project can be found in this repository (see `report.pdf`). This report describes the goal of the project, the model and the experiments we performed.
 
-## Training Data available for this project: <br/>
-* 9600 scored images according to their similarity to the concept of a prototypical 'cosmology image' - number from 0.0 to 8.0, with 0.0 indicating a very low similarity <br/>
-* 1200 labeled images
+## Training Data available for this project:
+* 9600 scored images according to their similarity to the concept of a prototypical 'cosmology image' - number from 0.0 to 8.0, with 0.0 indicating a very low similarity. Most of the training images have a score under 3, none of them has a score above 6.5.  
+* 1200 labeled images containing galaxy images (label = 1) and corrupted/irrelevant images (label = 0).
 
 ## How to use the code ?
 ### Set up your environment
