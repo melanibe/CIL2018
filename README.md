@@ -13,7 +13,7 @@ The scientific report associated to this project can be found in this repository
 ### Set up your environment
 _NOTE_ : our code is working with Python 3.6 we assume that is the version installed on your computer.
 
-IMPORTANT : keep the exact structure of the code folder as submitted and to place the data and runs folder in this main folder (as indicated in step 1 of the following set-up procedure).
+_IMPORTANT_ : keep the exact structure of the code folder as submitted and to place the data and runs folder in this main folder (as indicated in step 1 of the following set-up procedure).
 
 Before using our code, please follow this procedure:
 * Download the `data` folder and the `runs` folder from polybox (under: https://polybox.ethz.ch/index.php/f/1032408684). The data folder contains all 3 subfolders containing the training images as well as the csv file containing the associated labels and scopres. The runs folder contains all fitted models (to avoid recomputation for reproducing the results).
