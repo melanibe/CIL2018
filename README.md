@@ -22,7 +22,7 @@ Before using our code, please follow this procedure:
 
 ### Reproducing the report results on the development set
 In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files: 
- * `reproduce_neural_results_dev.py`: 
+ * `reproduce_model_results_dev.py`: 
     - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model as well as for the discriminator trained alone. Results are printed to the console.
  * `reproduce_baseline_results_dev.py`:
     - Simply run this file to get the MAE score on the development set for our two baselines. Results are printed to the        console.
