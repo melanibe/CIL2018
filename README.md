@@ -32,12 +32,12 @@ In order to make it easier for the reader to reproduce the results on our develo
     - Running this file creates a csv file containing the predicted score associated to a particular training run of our final                  model. This file can also be used to create a csv file with the predictions associated to a particular training run of the model that trains the score discriminator alone. 
         * To choose the training model for which you want to predict the score, please specify run_number (name of the corresponding subfolder containing the checkpoints) and model_number (specify the number of the .meta file) in the 2 first lines of the file. 
         * Parameter to use to predict from our final model are:
-            - run_number:
-            - model_number: 
+            - run_number: 1530273051
+            - model_number: 22088
         * Parameter to use to predict from the model which trains the score discriminant alone are:
-            - run_number:
-            - model_number:    
+            - run_number: TO COMPLETE TOMORROW
+            - model_number: TO COMPLETE TOMORROW  
  * kaggle_prediction_baseline:
     - Running this file creates a csv file containing the predicted score associated to a particular baseline (as described in the final report).
        * Parameters to specify are:
-            - place here the parameters
+            - place here the parameters once i have the final file.
