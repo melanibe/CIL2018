@@ -11,7 +11,7 @@ The scientific report associated to this project can be found in this repository
 
 ## How to use the code ?
 ### Set up your environment
-NOTE : our code is working with Python 3.6 we assume that is the version installed on your computer.
+*NOTE* : our code is working with Python 3.6 we assume that is the version installed on your computer.
 
 IMPORTANT : keep the exact structure of the code folder as submitted and to place the data and runs folder in this main folder (as indicated in step 1 of the following set-up procedure).
 
