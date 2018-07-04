@@ -1,7 +1,7 @@
 import os
 global cwd
 
-""" Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet.
+""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
 
 File containing configuration variables used across the project.
 Do not change please.
