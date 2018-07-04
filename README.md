@@ -53,7 +53,7 @@ It assumes that you have trained your baseline estimator first and saved it to t
  This file launches the image generation from a saved checkpoint file and save those whose score is above 3.0 (run time max. 5 mins).
  
  If you would like to use your own trained model just change `run_number` and `model_number` as in the previous sections.
- The produced images are placed in the ``/produced/run_number/" subfolder of the current directory.
+ The produced images are placed in the `/produced/run_number/ subfolder of the current directory.
  
  ## Training the model from scratch
  If you wish to re-train completely our 2-in-1 model instead of using the provided saved checkpoints you can use `train_2in1_model.py`:
