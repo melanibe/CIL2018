@@ -40,7 +40,7 @@ In order to make it easier for the reader to reproduce the results on our develo
     - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `baseline_kaggle_prediction.py`:
     - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run the output the prediction on any custom dataset (for example to check the predicted score on the generated images).
-It assumes that you have trained your baseline estimator first and saved it to the /baselines_models/ subfolder. The /baselines_models/ downloaded from the polybox during set up of your environment already contains the saved estimators used for the report.
+It assumes that you have trained your baseline estimator first and saved it to the `/baselines_models/` subfolder. The `/baselines_models/` downloaded from the polybox during set up of your environment already contains the saved estimators used for the report.
     - You have to enter the:
         * `model name`: 'Ridge' and 'RandomForest' for the model to build to use for prediction.
         * `feat_size`: the number of features that were used for training (we used 10).
