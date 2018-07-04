@@ -9,6 +9,8 @@ The scientific report associated to this project can be found in this repository
 * 9600 scored images according to their similarity to the concept of a prototypical 'cosmology image' - number from 0.0 to 8.0, with 0.0 indicating a very low similarity. Most of the training images have a score under 3, none of them has a score above 6.5.  
 * 1200 labeled images containing galaxy images (label = 1) and corrupted/irrelevant images (label = 0).
 
+The associated Kaggle Competition for the score prediction task can be found under: https://www.kaggle.com/c/cil-cosmology-2018
+
 ## Set up your environment to run our code
 _NOTE_: our code is working with Python 3.6 we assume that is the version installed on your computer.
 
