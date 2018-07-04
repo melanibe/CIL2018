@@ -8,7 +8,7 @@ import PIL.Image
 from config import *
 from baseline_train import extract_feats
 
-""" Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet.
+""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
 
 This file is used to output the predictions on the query dataset for Kaggle.
 It can also be run the output the prediction on any custom dataset (for example to
