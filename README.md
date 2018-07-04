@@ -22,14 +22,14 @@ Before using our code, please follow this procedure:
 * Run the pip requirement file to get all necessary packages for the project using `pip3 install -r requirements.txt`
 
 ## Reproducing the report results on the development set
-In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files: 
+In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files (run time max. 10 min): 
  * `model_reproduce_results_dev.py`: 
     - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model. Results are printed to the console.
  * `baseline_reproduce_results_dev.py`:
     - Simply run this file to get the MAE score on the development set for our two baselines. Results are printed to the        console. It used the 2 saved estimators located in the `baselines_models` subfolder (provided in the polybox).
- 
+    
  ## Reproducing the csv files for submission to Kaggle competition (test set)
- To produce the csv file to submit to Kaggle you can use:
+ To produce the csv file to submit to Kaggle you can use (run time max. 10 min):
  * `model_kaggle_prediction.py`: 
     - Running this file creates a csv file containing the predicted score associated to a particular training run of our final                  model.
         * To choose the training model for which you want to predict the score, please specify `run_number` (name of the corresponding subfolder containing the checkpoints) and `model_number` (specify the number of the `.meta` file) in the 2 first lines of the file. 
