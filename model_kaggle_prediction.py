@@ -4,7 +4,7 @@ import os
 
 import preprocessing
 
-"""Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
+"""Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Running this file creates a csv file containing the predicted score associated to a
 particular training run of our final model. 
