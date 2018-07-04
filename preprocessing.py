@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from skimage import io
 
-"""Melanie Bernhardt - Laura Manducchi - Melanie Gaillochet.
+"""Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Helper file to load the training data and create batches for network training.
 """
