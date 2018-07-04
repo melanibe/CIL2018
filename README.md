@@ -22,8 +22,8 @@ Before using our code, please follow this procedure:
 * Place all 5 folders in the root folder of this repository `CIL2018` (keeping the structure). And set this root folder `CIL2018` as your current directory.
 * Run the pip requirement file to get all necessary packages for the project using `pip3 install -r requirements.txt`
 
-## Reproducing the report results on the development set
-In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files (run time max. 10 min): 
+## Reproducing the report results on the validation set (aka dev set)
+In order to make it easier for the reader to reproduce the results on our validation (aka development) set presented in the results section of our article we created 2 files (run time max. 10 min): 
  * `model_reproduce_results_dev.py`: 
     - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model. Results are printed to the console.
  * `baseline_reproduce_results_dev.py`:
@@ -39,7 +39,7 @@ In order to make it easier for the reader to reproduce the results on our develo
             - `model_number: 22088`
     - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `baseline_kaggle_prediction.py`:
-    - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run the output the prediction on any custom dataset (for example to check the predicted score on the generated images).
+    - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run to output the prediction on any custom dataset (for example to check the predicted score on the generated images).
 It assumes that you have trained your baseline estimator first and saved it to the `baselines_models` subfolder. The `baselines_models` downloaded from the polybox during set up of your environment already contains the saved estimators used for the report.
     - You have to enter the:
         * `model name`: 'Ridge' and 'RandomForest' for the model to build to use for prediction.
@@ -76,3 +76,8 @@ experiments in the report).
 If the preprocessed feature matrix does not exist for the input parameters it will first compute the features matrix (this takes 10 min, grab a coffee), if this matrix was already saved previously it just loads it.
 It then fits the chosen estimator (another 10 mins if RandomForest, go for a cup of tea this time) and saves it the the `baselines_models` subfolder.
 The MAE on the dev set will be printed to the console at the end of the run.
+
+## Calculating descriptive statistics on the SCORED training dataset
+The report mentions some descriptive statistics on the SCORED training dataset (20% percentile, mean score, standard deviation). The results can be retrieved by running `descriptive_stats_scored_data.py`,
+ If you wish to re-train completely our baseline estimators instead of using the provided saved estimators you can use `baseline_train.py`, statistics are printed to the console.
+ If you wish to re-train completely our baseline estimators instead of using the provided saved estimators you can use `baseline_train.py`.
