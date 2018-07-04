@@ -1,6 +1,6 @@
 # Semester project - Galaxy Image Generation 
 ## Computational Intelligence Lab - ETH Zurich, Spring 2018
-#### Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet
+#### Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet
 
 In this project we build a 2-in-1 model that can generate images of galaxies observed by astronomical telescopes, and predict the similarity score of a set of query images with the same model.
 The scientific report associated to this project can be found in this repository (see `report.pdf`). This report describes the goal of the project, the model and the experiments we performed.
