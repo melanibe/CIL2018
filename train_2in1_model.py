@@ -12,7 +12,7 @@ from model.generator import generator
 from model.discriminator_label import discriminator_label
 from model.discriminator_score import discriminator_score
 
-"""Melanie Bernhardt - Laura Manducchi - Melanie Gaillochet.
+"""Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Main training file for our final 2-in-1 model. 
 Run as is to train with the original parameters described in the report. 
