@@ -46,6 +46,7 @@ It assumes that you have trained your baseline estimator first and saved it to t
         * `train_ratio`: the train/dev split ratio (we used 0.99 training split).
         * `folder`: the folder were the images to evaluate are located. By default it is the query images set.
     - Results are placed in the `predictions` subfolder. The filename is `[name of model]_[number of features]_query_pred.csv` if calculated on the query dataset, `[name of model]_[number of features]_trial_pred.csv` if calculated on another custom dataset.
+    - If you run this file on the folder of the generated images (instead on the query images folder) you will get the mean score and standard error of the score mentioned in the report printed to the console.
            
  ## Generating images
  To generate images for our final 2-in-1 model simply run `produce_images.py`. 
