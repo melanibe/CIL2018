@@ -8,7 +8,7 @@ from sklearn.externals import joblib
 
 from config import *
 
-""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
+""" Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 This file is a helper file for the preprocessing and feature matrix building
 for the baselines presented in the project.
