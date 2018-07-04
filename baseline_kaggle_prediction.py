@@ -67,8 +67,8 @@ ml_model = joblib.load(fitted_filename)
 # Predictions
 print("Predicting...")
 pred_data = ml_model.predict(query_df)
-print(np.mean(pred_data))
-print(np.std(pred_data))
+print("Mean predicted score: {}".format(np.mean(pred_data)))
+print("Std predicted scores: {}".np.std(pred_data)))
 
 # Saving Predictions
 prediction = pd.DataFrame(data=pred_data, columns=['Predicted'], index=index_mat)
