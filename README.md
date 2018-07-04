@@ -22,7 +22,7 @@ Before using our code, please follow this procedure:
 * Place all 5 folders in the root folder of this repository `CIL2018` (keeping the structure). And set this root folder `CIL2018` as your current directory.
 * Run the pip requirement file to get all necessary packages for the project using `pip3 install -r requirements.txt`
 
-## Reproducing the report results on the validation set (aka dev set)
+## Reproducing the report results on the validation set
 In order to make it easier for the reader to reproduce the results on our validation (aka development) set presented in the results section of our article we created 2 files (run time max. 10 min): 
  * `model_reproduce_results_dev.py`: 
     - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model. Results are printed to the console.
