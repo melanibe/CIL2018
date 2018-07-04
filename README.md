@@ -24,21 +24,18 @@ Before using our code, please follow this procedure:
 ## Reproducing the report results on the development set
 In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files: 
  * `model_reproduce_results_dev.py`: 
-    - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model as well as for the discriminator trained alone. Results are printed to the console.
+    - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model. Results are printed to the console.
  * `baseline_reproduce_results_dev.py`:
     - Simply run this file to get the MAE score on the development set for our two baselines. Results are printed to the        console. It used the 2 saved estimators located in the `baselines_models` subfolder (provided in the polybox).
  
  ## Reproducing the csv files for submission to Kaggle competition (test set)
  To produce the csv file to submit to Kaggle you can use:
  * `model_kaggle_prediction.py`: 
-    - Running this file creates a csv file containing the predicted score associated to a particular training run of our final                  model. This file can also be used to create a csv file with the predictions associated to a particular training run of the model that trains the score discriminator alone. 
+    - Running this file creates a csv file containing the predicted score associated to a particular training run of our final                  model.
         * To choose the training model for which you want to predict the score, please specify `run_number` (name of the corresponding subfolder containing the checkpoints) and `model_number` (specify the number of the `.meta` file) in the 2 first lines of the file. 
         * Parameter to use to predict from our final model are:
             - `run_number: 1530273051`
             - `model_number: 22088`
-        * Parameter to use to predict from the model which trains the score discriminant alone are:
-            - `run_number: TO COMPLETE TOMORROW`
-            - `model_number: TO COMPLETE TOMORROW`
     - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `baseline_kaggle_prediction.py`:
     - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run the output the prediction on any custom dataset (for example to check the predicted score on the generated images).
@@ -62,7 +59,6 @@ It assumes that you have trained your baseline estimator first and saved it to t
  * if you run it as it is, you will relaunch the exact same training procedure and parameters we used to build our saved final model (these are the default number of epochs, checkpoints, generator threshold training, batch size etc...)
  * you can modify the parameters you want to test other training procedure in the first section of this file.
  
- If you wish to re-train the score discriminator alone (without any generator or label discriminator) you can run `train_score_discr_alone.py`. Again running this file as it corresponds to the training we used for the model used to get the experiments results in the paper. You can modify the training procedure by modifying the parameters section at the beginning of the file. 
  
  ## Training the baselines from scratch
  If you wish to re-train completely our baseline estimators instead of using the provided saved estimators you can use `baseline_train.py`.
