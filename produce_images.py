@@ -6,7 +6,7 @@ from skimage import io
 
 import preprocessing
 
-""" Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet.
+""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
 
 Use this file to generate 100 images with a predicted score above 2.5 from a saved tensorflow checkpoint. 
 Required parameters (default parameters correspond to our final Kaggle model): 
