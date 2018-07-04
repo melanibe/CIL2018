@@ -50,7 +50,7 @@ It assumes that you have trained your baseline estimator first and saved it to t
            
  ## Generating images
  To generate images for our final 2-in-1 model simply run `produce_images.py`. 
- This file launches the image generation from a saved checkpoint file and save those whose score is above 2.5.
+ This file launches the image generation from a saved checkpoint file and save those whose score is above 3.0 (run time max. 5 mins).
  
  If you would like to use your own trained model just change `run_number` and `model_number` as in the previous sections.
  The produced images are placed in the "/produced/run_number/" subfolder of the current directory.
@@ -59,6 +59,8 @@ It assumes that you have trained your baseline estimator first and saved it to t
  If you wish to re-train completely our 2-in-1 model instead of using the provided saved checkpoints you can use `train_2in1_model.py`:
  * if you run it as it is, you will relaunch the exact same training procedure and parameters we used to build our saved final model (these are the default number of epochs, checkpoints, generator threshold training, batch size etc...)
  * you can modify the parameters you want to test other training procedure in the first section of this file.
+
+Note: training the model with the default parameters on 1 GPU on the ETH Leonhard cluster took approximately 3 hours.
  
  
  ## Training the baselines from scratch
