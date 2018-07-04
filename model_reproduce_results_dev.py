@@ -4,7 +4,7 @@ import os
 
 import preprocessing
 
-""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
+""" Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Use this file to reproduce the MAE computation from the report on our final 2-in-1 model.
 You do not need to specify any parameter. 
