@@ -15,16 +15,16 @@ _NOTE_: our code is working with Python 3.6 we assume that is the version instal
 _IMPORTANT_: keep the exact structure of the code folder as submitted and to place the data and runs folder in this main folder (as indicated in step 1 of the following set-up procedure).
 
 Before using our code, please follow this procedure:
-* Download the `data` folder and the `runs` folder from polybox (under: https://polybox.ethz.ch/index.php/f/1032408684). The data folder contains all 3 subfolders containing the training images as well as the csv file containing the associated labels and scopres. The runs folder contains all fitted models (to avoid recomputation for reproducing the results).
-* Place them in the root folder `CIL2018` (keeping the structure). And set the root folder `CIL2018` as current directory.
+* Download the `data` folder, the `runs` folder and the `baselines_models` folder from polybox (under: https://polybox.ethz.ch/index.php/f/1032408684). The `data` folder contains all 3 subfolders containing the training images as well as the csv file containing the associated labels and scopres. The `runs` folder contains all fitted models (to avoid recomputation for reproducing the results).The `baselines_models` contain the saved fitted estimators for the baselines. Please download everything (even if you think you don't need it - all subfolders have to exist in order to run the code smoothly).
+* Place all 3 folders in the root folder of this repository `CIL2018` (keeping the structure). And set this root folder `CIL2018` as your current directory.
 * Run the pip requirement file to get all necessary packages for the project using `pip3 install -r requirements.txt`
 
 ## Reproducing the report results on the development set
 In order to make it easier for the reader to reproduce the results on our development set presented in the results section of our article we created 2 files: 
- * `reproduce_model_results_dev.py`: 
+ * `model_reproduce_results_dev.py`: 
     - Simply run this file to get the MAE score on the development set for our final trained 2-in-1 model as well as for the discriminator trained alone. Results are printed to the console.
- * `reproduce_baseline_results_dev.py`:
-    - Simply run this file to get the MAE score on the development set for our two baselines. Results are printed to the        console.
+ * `baseline_reproduce_results_dev.py`:
+    - Simply run this file to get the MAE score on the development set for our two baselines. Results are printed to the        console. It used the 2 saved estimators located in the `baselines_models` subfolder (provided in the polybox).
  
  ## Reproducing the csv files for submission to Kaggle competition (test set)
  To produce the csv file to submit to Kaggle you can use:
@@ -40,7 +40,7 @@ In order to make it easier for the reader to reproduce the results on our develo
     - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `baseline_kaggle_prediction.py`:
     - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run the output the prediction on any custom dataset (for example to check the predicted score on the generated images).
-It assumes that you have trained your baseline estimator first and saved it to the `/baselines_models/` subfolder. The `/baselines_models/` downloaded from the polybox during set up of your environment already contains the saved estimators used for the report.
+It assumes that you have trained your baseline estimator first and saved it to the `baselines_models` subfolder. The `baselines_models` downloaded from the polybox during set up of your environment already contains the saved estimators used for the report.
     - You have to enter the:
         * `model name`: 'Ridge' and 'RandomForest' for the model to build to use for prediction.
         * `feat_size`: the number of features that were used for training (we used 10).
@@ -63,4 +63,14 @@ It assumes that you have trained your baseline estimator first and saved it to t
  If you wish to re-train the score discriminator alone (without any generator or label discriminator) you can run `train_score_discr_alone.py`. Again running this file as it corresponds to the training we used for the model used to get the experiments results in the paper. You can modify the training procedure by modifying the parameters section at the beginning of the file. 
  
  ## Training the baselines from scratch
- 
+ If you wish to re-train completely our baseline estimators instead of using the provided saved estimators you can use `baseline_train.py`.
+ The parameters to enter are:
+    - `model`: you can choose between 'Ridge' and 'RandomForest' for the model to build.
+    - `feat_size`: number of features to use for the feature matrix (it defaults to 10 parameter used for the
+experiments in the report)
+    - `train_ratio`: train/dev split ratio (it defaults to 0.99% training split, parameter used for the
+experiments in the report).
+
+If the preprocessed feature matrix does not exist for the input parameters it will first compute the features matrix (this takes 10 min, grab a coffee), if this matrix was already saved previously it just loads it.
+It then fits the chosen estimator (another 10 mins if RandomForest, go for a cup of tea this time) and saves it the the `baselines_models` subfolder.
+The MAE on the dev set will be printed to the console at the end of the run.
