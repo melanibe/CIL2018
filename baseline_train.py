@@ -13,7 +13,7 @@ from sklearn.externals import joblib
 from config import *
 from baseline_utils import csv_to_dict, extract_feats, preprocessing_baseline_train_test
 
-""" Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet.
+""" Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Use this file to train the baseline estimators. 
 
