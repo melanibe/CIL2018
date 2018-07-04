@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 import os
 
-"""Mélanie Bernhardt - Laura Manducchi - Mélanie Gaillochet
+"""Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet
 This file is a helper file to build the score discriminant.
 """
 
