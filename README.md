@@ -1,5 +1,6 @@
-# Semester project - Galaxy Image Generation 
-## Computational Intelligence Lab - ETH Zurich, Spring 2018
+# Semester project - Galaxy Image Generation
+## A “2-in-1” deep neural model forgenerating and scoring galaxy images
+### Computational Intelligence Lab - ETH Zurich, Spring 2018
 #### Mélanie Bernhardt - Laura Manduchi - Mélanie Gaillochet
 
 In this project we build a 2-in-1 model that can generate images of galaxies observed by astronomical telescopes, and predict the similarity score of a set of query images with the same model.
