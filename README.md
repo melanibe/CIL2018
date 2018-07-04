@@ -65,10 +65,10 @@ It assumes that you have trained your baseline estimator first and saved it to t
  ## Training the baselines from scratch
  If you wish to re-train completely our baseline estimators instead of using the provided saved estimators you can use `baseline_train.py`.
  The parameters to enter are:
-    * `model`: you can choose between 'Ridge' and 'RandomForest' for the model to build.
-    * `feat_size`: number of features to use for the feature matrix (it defaults to 10 parameter used for the
+ * `model`: you can choose between 'Ridge' and 'RandomForest' for the model to build.
+ * `feat_size`: number of features to use for the feature matrix (it defaults to 10 parameter used for the
 experiments in the report)
-    * `train_ratio`: train/dev split ratio (it defaults to 0.99% training split, parameter used for the
+ * `train_ratio`: train/dev split ratio (it defaults to 0.99% training split, parameter used for the
 experiments in the report).
 
 If the preprocessed feature matrix does not exist for the input parameters it will first compute the features matrix (this takes 10 min, grab a coffee), if this matrix was already saved previously it just loads it.
