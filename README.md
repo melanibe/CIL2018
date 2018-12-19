@@ -33,10 +33,10 @@ In order to make it easier for the reader to reproduce the results on our valida
  To produce the csv file to submit to Kaggle you can use (run time max. 10 min):
  * `model_kaggle_prediction.py`: 
     - Running this file creates a csv file containing the predicted score associated to a particular training run of our final                  model.
-        * To choose the training model for which you want to predict the score, please specify `run_number` (name of the corresponding subfolder containing the checkpoints) and `model_number` (specify the number of the `.meta` file) in the 2 first lines of the file. 
+        * To choose the training model for which you want to predict the score, please specify `run_number` (name of the corresponding subfolder containing the checkpoints) and `model_number` (specify the number of the `.meta` file) as a parser argument.
         * Parameter to use to predict from our final model are:
-            - `run_number: 1530273051`
-            - `model_number: 22088`
+            - `-run_number: 1530273051`
+            - `-model_number: 22088`
     - Results are placed in the predictions subfolder of the root folder, the train run_number is the name of the csv output file.
  * `baseline_kaggle_prediction.py`:
     - This file is used to output the predictions from the baselines on the query dataset for Kaggle. It can also be run to output the prediction on any custom dataset (for example to check the predicted score on the generated images).
