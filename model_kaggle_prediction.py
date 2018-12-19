@@ -21,8 +21,11 @@ Results are placed in the predictions subfolder of the root folder, the train ru
 
 ##### SET UP #####
 cwd = os.getcwd()
+
+# Choose model
 tf.flags.DEFINE_integer("run_number", 1530273051, "Run number (default: 1530273051)")
 tf.flags.DEFINE_integer("model_number", 22088, "Model number (default: 22088)")
+
 # Tensorflow Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
