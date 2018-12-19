@@ -9,20 +9,18 @@ import preprocessing
 """ Melanie Bernhardt - Laura Manduchi - Melanie Gaillochet.
 
 Use this file to generate 100 images with a predicted score above 2.5 from a saved tensorflow checkpoint. 
-Required parameters (default parameters correspond to our final Kaggle model): 
+Optional parameters (default parameters correspond to our final Kaggle model): 
 	- run_number : folder number of the training run
 	- model_number : model number i.e. identifier of the .meta file to use in the chosen folder.
 The produced images are placed in the "/produced/run_number/" subfolder of the current directory.
 """
 
-##### PARAMETERS TO ENTER #####
-run_number = 1530273051
-model_number = 22088 
-
 
 ##### AUTOMATIC SETTING OF OTHER PARAMETERS #####
 cwd = os.getcwd()
 # Tensorflow Parameters
+tf.flags.DEFINE_integer("run_number", 1530273051, "Run number (default: 1530273051)")
+tf.flags.DEFINE_integer("model_number", 22088, "Model number (default: 22088)")
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
